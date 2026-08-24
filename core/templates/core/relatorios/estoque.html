@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+{% block title %}Estoque atual{% endblock %}
+{% block content %}
+<h1>Estoque atual{% if filial %} — {{ filial }}{% endif %}</h1>
+{% include 'core/_includes/filtro_relatorio.html' %}
+
+{% if not filial %}
+    <p class="alert-ruptura">Selecione uma filial para ver o estoque.</p>
+{% else %}
+<table>
+    <thead><tr><th>Insumo</th><th>Estoque atual</th><th>Mínimo</th><th>Status</th></tr></thead>
+    <tbody>
+        {% for s in saldos %}
+        <tr>
+            <td>{{ s.insumo.nome }} ({{ s.insumo.get_unidade_medida_display }})</td>
+            <td>{{ s.estoque_atual }}</td>
+            <td>{{ s.estoque_minimo }}</td>
+            <td>
+                {% if s.em_ruptura %}
+                    <span class="badge ruptura">em ruptura</span>
+                {% else %}
+                    <span class="badge concluida">ok</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Sem insumos cadastrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

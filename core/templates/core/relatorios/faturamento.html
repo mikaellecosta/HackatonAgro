@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% block title %}Faturamento{% endblock %}
+{% block content %}
+<h1>Faturamento{% if filial %} — {{ filial }}{% endif %}</h1>
+<p style="color:#666">Apenas vendas <strong>concluídas</strong> nos últimos {{ dias }} dia(s).</p>
+{% include 'core/_includes/filtro_relatorio.html' %}
+
+<div class="cards">
+    <div class="card">
+        <div class="num">R$ {{ faturamento_total|floatformat:2 }}</div>
+        <div>Faturamento total</div>
+    </div>
+    <div class="card">
+        <div class="num">R$ {{ ticket_medio|floatformat:2 }}</div>
+        <div>Ticket médio</div>
+    </div>
+</div>
+
+{% if faturamento_por_filial %}
+<h2>Comparativo entre filiais</h2>
+<table>
+    <thead><tr><th>Filial</th><th>Vendas</th><th>Faturamento</th></tr></thead>
+    <tbody>
+        {% for row in faturamento_por_filial %}
+        <tr>
+            <td>{{ row.filial__nome }}</td>
+            <td>{{ row.qtd_vendas }}</td>
+            <td>R$ {{ row.total|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<h2>Top pratos vendidos</h2>
+<table>
+    <thead><tr><th>#</th><th>Prato</th><th>Quantidade</th></tr></thead>
+    <tbody>
+        {% for p in top_pratos %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.prato__nome }}</td>
+            <td>{{ p.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem vendas no período.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

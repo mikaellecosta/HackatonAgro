@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ fornecedor.nome }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:fornecedor_list' %}">← Fornecedores</a></p>
+<h1>{{ fornecedor.nome }}</h1>
+
+<table>
+    <tr><th>CNPJ</th><td>{{ fornecedor.cnpj|default:'—' }}</td></tr>
+    <tr><th>Representante</th><td>{{ fornecedor.representante|default:'—' }}</td></tr>
+    <tr><th>Ramo</th><td>{{ fornecedor.get_ramo_alimenticio_display }}</td></tr>
+    <tr><th>E-mail</th><td>{{ fornecedor.email|default:'—' }}</td></tr>
+    <tr><th>Telefone</th><td>{{ fornecedor.telefone|default:'—' }}</td></tr>
+    <tr><th>Cidade/UF</th><td>{{ fornecedor.cidade }}{% if fornecedor.estado %}/{{ fornecedor.estado }}{% endif %}</td></tr>
+    <tr><th>Endereço</th><td>{{ fornecedor.endereco|default:'—' }}</td></tr>
+</table>
+
+<h2>Insumos vendidos</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Preço</th><th>Prazo (dias)</th></tr></thead>
+    <tbody>
+        {% for it in fornecedor.itens.all %}
+            <tr>
+                <td>{{ it.insumo.nome }} ({{ it.insumo.get_unidade_medida_display }})</td>
+                <td>R$ {{ it.preco }}</td>
+                <td>{{ it.prazo_entrega_dias|default:'—' }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3">Nenhum insumo vinculado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:fornecedor_update' fornecedor.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:fornecedor_delete' fornecedor.pk %}">Excluir</a>
+</p>
+{% endblock %}

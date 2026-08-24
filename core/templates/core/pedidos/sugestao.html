@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% block title %}Sugestão de pedido{% endblock %}
+{% block content %}
+<h1>Sugestão automática de pedido{% if filial %} — {{ filial }}{% endif %}</h1>
+<p style="color:#666">
+    Baseado nos insumos em ruptura. Cada bloco abaixo é um pedido pronto pra
+    ser criado: o sistema escolhe o fornecedor mais barato (desempate por
+    prazo de entrega menor) e calcula a quantidade pra repor o estoque mínimo.
+</p>
+
+{% if filiais_disponiveis %}
+<form method="get" style="margin-bottom:1rem">
+    <select name="filial">
+        <option value="">— escolha uma filial —</option>
+        {% for f in filiais_disponiveis %}
+        <option value="{{ f.pk }}" {% if filial.pk == f.pk %}selected{% endif %}>{{ f.nome }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Carregar</button>
+</form>
+{% endif %}
+
+{% if not filial %}
+    <p class="alert-ruptura">Selecione uma filial para ver as sugestões.</p>
+{% elif not sugestoes and not sem_fornecedor %}
+    <p>Nenhum insumo precisando de reposição agora. 🎉</p>
+{% else %}
+    {% for bucket in sugestoes %}
+    <div class="card" style="margin:1rem 0">
+        <h2>{{ bucket.fornecedor }} — total estimado R$ {{ bucket.total|floatformat:2 }}</h2>
+        <table>
+            <thead><tr><th>Insumo</th><th>Quantidade</th><th>Preço unit.</th><th>Subtotal</th><th>Prazo</th></tr></thead>
+            <tbody>
+                {% for item in bucket.itens %}
+                <tr>
+                    <td>{{ item.insumo.nome }} ({{ item.insumo.get_unidade_medida_display }})</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>R$ {{ item.preco_unitario }}</td>
+                    <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                    <td>{{ item.prazo_entrega_dias|default:'—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form method="post" action="{% url 'core:sugestao_pedido_criar' %}">
+            {% csrf_token %}
+            <input type="hidden" name="fornecedor" value="{{ bucket.fornecedor.pk }}">
+            {% if user.filial != filial %}
+                <input type="hidden" name="filial" value="{{ filial.pk }}">
+            {% endif %}
+            <button type="submit">Criar pedido para {{ bucket.fornecedor }}</button>
+        </form>
+    </div>
+    {% endfor %}
+
+    {% if sem_fornecedor %}
+    <h2>Sem fornecedor cadastrado</h2>
+    <p class="alert-ruptura">Estes insumos estão em ruptura mas não têm fornecedor associado.
+       Cadastre um <a href="{% url 'core:fornecedor_create' %}">fornecedor</a>
+       e vincule preços antes de gerar pedido.</p>
+    <table>
+        <thead><tr><th>Insumo</th><th>Quantidade sugerida</th><th>Déficit</th></tr></thead>
+        <tbody>
+            {% for s in sem_fornecedor %}
+            <tr>
+                <td>{{ s.insumo.nome }}</td>
+                <td>{{ s.quantidade }}</td>
+                <td>{{ s.deficit }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endif %}
+{% endblock %}

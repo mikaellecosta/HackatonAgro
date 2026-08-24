@@ -1,0 +1,6 @@
+asgiref==3.11.1
+Django==6.0.5
+django-unfold==0.92.0
+pillow==12.2.0
+requests==2.32.3
+sqlparse==0.5.5

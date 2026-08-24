@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ insumo.nome }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:insumo_list' %}">← Insumos</a></p>
+<h1>{{ insumo.nome }}</h1>
+
+<table>
+    <tr><th>Unidade de medida</th><td>{{ insumo.get_unidade_medida_display }}</td></tr>
+    <tr><th>Estoque mínimo</th><td>{{ insumo.estoque_minimo }}</td></tr>
+</table>
+
+<h2>Fornecedores que vendem este insumo</h2>
+<table>
+    <thead><tr><th>Fornecedor</th><th>Preço</th><th>Prazo</th></tr></thead>
+    <tbody>
+        {% for it in insumo.itens_fornecedor.all %}
+        <tr>
+            <td><a href="{% url 'core:fornecedor_detail' it.fornecedor.pk %}">{{ it.fornecedor.nome }}</a></td>
+            <td>R$ {{ it.preco }}</td>
+            <td>{{ it.prazo_entrega_dias|default:'—' }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem fornecedor cadastrado para este insumo.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:insumo_update' insumo.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:insumo_delete' insumo.pk %}">Excluir</a>
+</p>
+{% endblock %}

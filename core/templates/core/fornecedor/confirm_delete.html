@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir {{ fornecedor }}{% endblock %}
+{% block content %}
+<h1>Excluir fornecedor?</h1>
+<p>Tem certeza que deseja excluir <strong>{{ fornecedor }}</strong>?</p>
+<p>Os itens vinculados (preços de insumos) também serão removidos.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:fornecedor_detail' fornecedor.pk %}">Cancelar</a>
+</form>
+{% endblock %}

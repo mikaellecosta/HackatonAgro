@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Novo{% endif %} fornecedor{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:fornecedor_list' %}">← Fornecedores</a></p>
+<h1>{% if object %}Editar{% else %}Novo{% endif %} fornecedor</h1>
+
+<form method="post" style="max-width:600px">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:fornecedor_list' %}">Cancelar</a>
+</form>
+{% endblock %}

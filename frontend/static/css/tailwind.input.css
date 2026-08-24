@@ -1,0 +1,413 @@
+/* =============================================================================
+   Grupo Tereza Gastronomia — Design System (Tailwind v4)
+   Compilado em: ./tailwind.css
+   Build:    make tailwind
+   Watch:    make tailwind-watch
+   ============================================================================= */
+
+@import "tailwindcss";
+
+/* Faz o Tailwind escanear nossos templates Django para gerar só as classes usadas.
+   Paths relativos a este arquivo (frontend/static/css/tailwind.input.css):
+     ../../..        → raiz do projeto (escaneia core/)
+     ../../templates → marketing templates (frontend/templates/) */
+@source "../../../core/**/*.{html,py}";
+@source "../../templates/**/*.html";
+
+/* -----------------------------------------------------------------------------
+   Tokens — paleta nordestina + semântica
+   ----------------------------------------------------------------------------- */
+@theme {
+  /* Paleta */
+  --color-deep-red:        #750A0A;  /* Primary  — vermelho profundo */
+  --color-russet-oak:      #923C27;  /* Secondary — terracota/ferrugem */
+  --color-toasted-caramel: #84592B;  /* Muted   — caramelo torrado */
+  --color-spiced-wine:     #743014;  /* Accent  — vinho especiado */
+  --color-crimson-red:     #632223;  /* Danger  — vermelho carmesim */
+  --color-golden-batter:   #E8D1A7;  /* Background — dourado/bege */
+  --color-cowhide-cocoa:   #442D1C;  /* Foreground — marrom couro */
+
+  /* Hover variants */
+  --color-deep-red-hover:    #8A0B0B;
+  --color-russet-oak-hover:  #A04530;
+
+  /* Tipografia */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Raios */
+  --radius-sm: 0.5rem;   /* 8px  — botões, inputs */
+  --radius-md: 0.75rem;  /* 12px — cards */
+  --radius-lg: 1rem;     /* 16px — cards grandes */
+}
+
+/* -----------------------------------------------------------------------------
+   Base — reset opinativo da identidade
+   ----------------------------------------------------------------------------- */
+@layer base {
+  html { font-family: var(--font-sans); }
+  body { @apply bg-golden-batter text-cowhide-cocoa antialiased; line-height: 1.5; }
+
+  h1 { @apply text-3xl font-bold text-deep-red mb-4; }
+  h2 { @apply text-2xl font-semibold text-spiced-wine mb-3 mt-6; }
+  h3 { @apply text-xl font-semibold text-russet-oak mb-2; }
+
+  /* Tabelas — estilo Tereza por padrão (vale para CRUDs existentes) */
+  table { @apply w-full border-collapse my-4 bg-white rounded-xl overflow-hidden shadow; }
+  th, td { @apply px-4 py-3 text-left align-middle; border-bottom: 1px solid var(--color-golden-batter); }
+  th { @apply bg-golden-batter/60 text-cowhide-cocoa font-semibold text-xs uppercase tracking-wider; }
+  tbody tr { @apply transition-colors duration-150; }
+  tbody tr:hover { @apply bg-golden-batter/20; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.actions { @apply text-right; }
+
+  /* Foco visível, atende WCAG */
+  :focus-visible { @apply outline-2 outline-offset-2 outline-deep-red; }
+}
+
+/* -----------------------------------------------------------------------------
+   Utilities do design system — declaradas com @utility para permitir composição
+   via @apply em outros blocos. Use direto nos templates como classes normais.
+   ----------------------------------------------------------------------------- */
+
+/* Botões ----------------------------------------------------------------------- */
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg
+         font-medium text-golden-batter bg-deep-red shadow-md
+         transition-colors duration-200
+         hover:bg-deep-red-hover
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-red focus-visible:ring-offset-2 focus-visible:ring-offset-golden-batter
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+@utility btn-primary-lg { @apply btn-primary px-8 py-4 text-lg; }
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg
+         font-medium text-golden-batter bg-russet-oak shadow-md
+         transition-colors duration-200
+         hover:bg-russet-oak-hover
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-russet-oak focus-visible:ring-offset-2 focus-visible:ring-offset-golden-batter;
+}
+
+@utility btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg
+         font-medium text-deep-red bg-white border-2 border-deep-red
+         transition-colors duration-200
+         hover:bg-deep-red hover:text-golden-batter
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-red focus-visible:ring-offset-2;
+}
+
+@utility btn-danger {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg
+         font-medium text-white bg-crimson-red shadow-md
+         transition-colors duration-200 hover:bg-[#7a2a2b];
+}
+
+/* Cards ------------------------------------------------------------------------ */
+@utility ts-card {
+  @apply bg-white rounded-2xl border-2 border-golden-batter shadow-lg p-6
+         transition-shadow duration-200 hover:shadow-xl;
+}
+@utility ts-card-tight { @apply ts-card p-4 rounded-xl; }
+
+/* Inputs ----------------------------------------------------------------------- */
+@utility ts-input {
+  @apply w-full px-4 py-3 rounded-lg bg-white border-2 border-golden-batter
+         text-cowhide-cocoa placeholder:text-cowhide-cocoa/50
+         transition-colors duration-200
+         focus:outline-none focus:border-deep-red;
+}
+
+/* Badges ----------------------------------------------------------------------- */
+@utility ts-badge          { @apply inline-block px-2.5 py-0.5 rounded-md text-xs font-semibold bg-golden-batter/70 text-cowhide-cocoa; }
+@utility ts-badge-success  { @apply ts-badge bg-emerald-100 text-emerald-800; }
+@utility ts-badge-warn     { @apply ts-badge bg-amber-100 text-amber-800; }
+@utility ts-badge-danger   { @apply ts-badge bg-rose-100 text-rose-800; }
+
+/* Toolbar de listagem — filtros + CTA -----------------------------------------
+   Uso:
+     <form class="ts-toolbar">
+       <div class="ts-filter-group">
+         <input class="ts-filter-input" ...>
+         <select class="ts-filter-input">...</select>
+         <button class="btn-secondary ts-filter-btn">Filtrar</button>
+       </div>
+       <div class="ts-toolbar-actions">
+         <a class="btn-primary">+ Novo</a>
+       </div>
+     </form>
+   ----------------------------------------------------------------------------- */
+@utility ts-toolbar {
+  @apply flex flex-wrap items-center justify-between gap-3
+         bg-white rounded-xl border-2 border-golden-batter shadow-sm
+         px-4 py-3 mb-4;
+}
+@utility ts-filter-group   { @apply flex flex-wrap items-center gap-2 min-w-0; }
+@utility ts-toolbar-actions{ @apply flex flex-wrap items-center gap-2 ml-auto; }
+
+/* Inputs compactos para a toolbar (override do reset do form do CRUD) */
+@utility ts-filter-input {
+  @apply !w-auto !px-3 !py-2 !text-sm !rounded-lg !bg-white !border-2 !border-golden-batter
+         !text-cowhide-cocoa transition-colors duration-200
+         focus:outline-none focus:!border-deep-red;
+}
+@utility ts-filter-btn {
+  @apply !px-4 !py-2 !text-sm gap-1;
+}
+
+/* Botão de ação por ícone (editar / excluir / ver) ---------------------------
+   Uso:
+     <a class="ts-icon-btn ts-icon-btn-edit"   title="Editar">  <i data-lucide="pencil"></i></a>
+     <a class="ts-icon-btn ts-icon-btn-danger" title="Excluir"> <i data-lucide="trash-2"></i></a>
+     <a class="ts-icon-btn ts-icon-btn-view"   title="Ver">     <i data-lucide="eye"></i></a>
+   ----------------------------------------------------------------------------- */
+@utility ts-icon-btn {
+  @apply inline-flex items-center justify-center size-8 rounded-md
+         border border-golden-batter bg-white
+         text-cowhide-cocoa/70
+         transition-colors duration-150
+         hover:bg-golden-batter/40 hover:text-cowhide-cocoa
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-red focus-visible:ring-offset-1 focus-visible:ring-offset-white;
+}
+@utility ts-icon-btn-view   { @apply !text-toasted-caramel hover:!bg-golden-batter/50 hover:!text-spiced-wine; }
+@utility ts-icon-btn-edit   { @apply !text-russet-oak hover:!bg-russet-oak hover:!text-white hover:!border-russet-oak; }
+@utility ts-icon-btn-danger { @apply !text-crimson-red hover:!bg-crimson-red hover:!text-white hover:!border-crimson-red; }
+@utility ts-icon              { @apply size-4 shrink-0; }
+@utility ts-row-actions       { @apply flex items-center gap-1 whitespace-nowrap; }
+
+/* Layout ----------------------------------------------------------------------- */
+@utility ts-section   { @apply py-20; }
+@utility ts-container { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+
+/* Hero gradient — usar em <section class="ts-section ts-hero-gradient"> */
+@utility ts-hero-gradient {
+  background: linear-gradient(135deg, #923C27 0%, #E8D1A7 50%, #743014 100%);
+}
+
+/* Header / nav (usado pelo base.html) ----------------------------------------- */
+@utility ts-nav-link {
+  @apply px-3 py-2 rounded-md text-sm font-medium text-golden-batter/90
+         transition-colors duration-200
+         hover:bg-white/10 hover:text-white;
+}
+@utility ts-nav-link-active { @apply ts-nav-link bg-white/10 text-white; }
+
+/* -----------------------------------------------------------------------------
+   Layout shell — sidebar + topbar + main (estilo dashboard)
+   Estados em <html>:
+     .sidebar-collapsed     → sidebar recolhida (só ícones) no desktop
+     .sidebar-mobile-open   → drawer aberto no mobile (overlay)
+   Larguras:
+     --sidebar-w-expanded:  largura quando expandida (default 16rem / 256px)
+     --sidebar-w-collapsed: largura quando recolhida (default 4.5rem / 72px)
+     --topbar-h:            altura da topbar fixa
+   ----------------------------------------------------------------------------- */
+@layer components {
+
+    :root {
+        --sidebar-w-expanded: 16rem;
+        --sidebar-w-collapsed: 4.5rem;
+        --topbar-h: 3.5rem;
+    }
+
+    /* ---- Sidebar (desktop) -------------------------------------------------- */
+    .ts-sidebar {
+        @apply fixed inset-y-0 left-0 z-40 flex flex-col bg-deep-red text-golden-batter shadow-xl
+               transition-all duration-300 ease-out;
+        width: var(--sidebar-w-expanded);
+    }
+    .sidebar-collapsed .ts-sidebar { width: var(--sidebar-w-collapsed); }
+
+    /* Mobile: começa fora da tela e vira drawer ao abrir */
+    @media (max-width: 767px) {
+        .ts-sidebar { @apply -translate-x-full; width: var(--sidebar-w-expanded) !important; }
+        .sidebar-mobile-open .ts-sidebar { @apply translate-x-0; }
+    }
+
+    .ts-sidebar-header {
+        @apply flex items-center px-4 py-4 border-b border-white/10 shrink-0;
+        height: calc(var(--topbar-h) + 1.25rem);
+    }
+    .ts-sidebar-brand {
+        @apply flex items-center gap-3 font-bold tracking-wide
+               text-golden-batter hover:text-white transition-colors;
+        min-width: 0;
+    }
+    .ts-sidebar-brand-icon { @apply size-8 shrink-0 text-golden-batter; }
+    .ts-sidebar-brand-text { @apply text-base leading-tight whitespace-nowrap; }
+
+    .ts-sidebar-nav {
+        @apply flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 space-y-6;
+
+        /* Scrollbar flutuante minimalista — Firefox */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 209, 167, 0.0) transparent; /* invisível por padrão */
+        transition: scrollbar-color 200ms ease-out;
+    }
+    .ts-sidebar-nav:hover {
+        scrollbar-color: rgba(232, 209, 167, 0.35) transparent;
+    }
+
+    /* Scrollbar flutuante minimalista — WebKit (Chrome/Safari/Edge) */
+    .ts-sidebar-nav::-webkit-scrollbar        { width: 6px; }
+    .ts-sidebar-nav::-webkit-scrollbar-track  { background: transparent; }
+    .ts-sidebar-nav::-webkit-scrollbar-thumb  {
+        background-color: transparent;
+        border-radius: 9999px;
+        transition: background-color 200ms ease-out;
+    }
+    .ts-sidebar-nav:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(232, 209, 167, 0.35); /* golden-batter @ 35% */
+    }
+    .ts-sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(232, 209, 167, 0.6);
+    }
+    .ts-sidebar-nav::-webkit-scrollbar-button { display: none; }
+
+    .ts-side-section {
+        @apply space-y-1;
+    }
+    .ts-side-section-title {
+        @apply text-[10px] uppercase tracking-[0.12em] font-semibold
+               text-golden-batter/60 px-3 mb-2 mt-0;
+    }
+
+    .ts-side-link {
+        @apply flex items-center gap-3 px-3 py-2.5 rounded-lg
+               text-sm font-medium text-golden-batter/85
+               whitespace-nowrap overflow-hidden
+               transition-colors duration-200
+               hover:bg-white/10 hover:text-white
+               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-golden-batter;
+    }
+    .ts-side-link-active {
+        @apply bg-white/15 text-white shadow-inner;
+    }
+    /* faixa lateral indicando ativo */
+    .ts-side-link-active {
+        box-shadow: inset 3px 0 0 0 var(--color-golden-batter);
+    }
+
+    .ts-side-icon { @apply size-5 shrink-0; }
+
+    /* Quando recolhida: esconde labels e centraliza ícones */
+    .sidebar-collapsed .ts-side-label,
+    .sidebar-collapsed .ts-side-section-title {
+        @apply opacity-0 invisible w-0;
+        pointer-events: none;
+    }
+    .sidebar-collapsed .ts-side-link { @apply justify-center px-2; }
+    .sidebar-collapsed .ts-sidebar-brand { @apply justify-center; }
+    .sidebar-collapsed .ts-side-section { @apply space-y-1; }
+
+    /* Botão de recolher/expandir (rodapé da sidebar, só no desktop) */
+    .ts-sidebar-collapse-btn {
+        @apply hidden md:flex items-center gap-3 px-3 py-2.5 mx-3 mb-3 rounded-lg
+               text-xs font-medium text-golden-batter/70
+               border border-white/10
+               hover:bg-white/10 hover:text-white transition-colors;
+    }
+    .sidebar-collapsed .ts-sidebar-collapse-btn { @apply justify-center px-2; }
+    .ts-collapse-icon-when-collapsed { @apply hidden; }
+    .sidebar-collapsed .ts-collapse-icon-when-expanded { @apply hidden; }
+    .sidebar-collapsed .ts-collapse-icon-when-collapsed { @apply inline-block; }
+
+    /* Backdrop do drawer mobile */
+    .ts-sidebar-backdrop {
+        @apply fixed inset-0 z-30 bg-cowhide-cocoa/60 backdrop-blur-sm
+               opacity-0 invisible transition-opacity duration-200 md:hidden;
+    }
+    .sidebar-mobile-open .ts-sidebar-backdrop { @apply opacity-100 visible; }
+
+    /* ---- Topbar ------------------------------------------------------------- */
+    .ts-topbar {
+        @apply fixed top-0 right-0 z-30 flex items-center gap-3 px-4 sm:px-6
+               bg-white/90 backdrop-blur border-b-2 border-golden-batter shadow-sm
+               transition-all duration-300 ease-out;
+        height: var(--topbar-h);
+        left: var(--sidebar-w-expanded);
+    }
+    .sidebar-collapsed .ts-topbar { left: var(--sidebar-w-collapsed); }
+    @media (max-width: 767px) { .ts-topbar { left: 0 !important; } }
+
+    .ts-topbar-title { @apply flex-1 min-w-0 truncate font-semibold text-cowhide-cocoa; }
+
+    .ts-mobile-trigger {
+        @apply inline-flex items-center justify-center size-10 rounded-lg
+               text-deep-red hover:bg-golden-batter/50 transition-colors;
+    }
+
+    .ts-topbar-user { @apply flex items-center gap-3 ml-auto; }
+    .ts-topbar-logout {
+        @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium
+               text-deep-red border border-deep-red/30
+               hover:bg-deep-red hover:text-golden-batter hover:border-deep-red
+               transition-colors duration-200;
+    }
+
+    /* ---- Main content (offset da sidebar e da topbar) ----------------------- */
+    .ts-main {
+        @apply transition-all duration-300 ease-out;
+        margin-left: var(--sidebar-w-expanded);
+        padding-top: var(--topbar-h);
+    }
+    .sidebar-collapsed .ts-main { margin-left: var(--sidebar-w-collapsed); }
+    @media (max-width: 767px) { .ts-main { margin-left: 0 !important; } }
+}
+
+/* -----------------------------------------------------------------------------
+   Compatibilidade — classes legadas usadas pelas páginas existentes
+   (mantém os CRUDs funcionando enquanto migramos para os utilitários acima)
+   ----------------------------------------------------------------------------- */
+@layer components {
+  /* Botões legados: <button type="submit">, .btn, .btn.ghost, .btn.danger */
+  .btn        { @apply btn-primary; }
+  .btn.ghost  { @apply !bg-white !text-deep-red !border-2 !border-deep-red hover:!bg-deep-red hover:!text-golden-batter; }
+  .btn.danger { @apply !bg-crimson-red !text-white hover:!bg-[#7a2a2b]; }
+
+  /* botão submit "pelado" dos CRUDs antigos vira primário */
+  form button[type="submit"]:not([class]) { @apply btn-primary; }
+
+  /* Grade de cards do dashboard */
+  .cards { @apply grid gap-6 my-4;
+           grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card  { @apply ts-card; }
+  .card .num { @apply text-3xl font-bold text-deep-red; }
+
+  /* Alertas */
+  .alert-ruptura { @apply bg-amber-100 border-l-4 border-amber-500 text-amber-900 px-4 py-3 rounded-md; }
+
+  /* Badges legados */
+  .badge                        { @apply ts-badge; }
+  .badge.is_matriz,
+  .badge.concluida              { @apply !bg-emerald-100 !text-emerald-800; }
+  .badge.pendente               { @apply !bg-amber-100 !text-amber-800; }
+  .badge.cancelada,
+  .badge.ruptura                { @apply !bg-rose-100 !text-rose-800; }
+
+  /* Mensagens do Django */
+  .messages           { @apply list-none p-0 my-3 space-y-2; }
+  .messages li        { @apply px-4 py-2 rounded-md; }
+  .messages li.success{ @apply bg-emerald-100 text-emerald-800; }
+  .messages li.warning{ @apply bg-amber-100 text-amber-800; }
+  .messages li.error  { @apply bg-rose-100 text-rose-800; }
+
+  /* Paginação */
+  .pagination       { @apply flex flex-wrap items-center gap-2 my-4; }
+  .pagination a,
+  .pagination span  { @apply px-3 py-1 rounded-md border border-golden-batter text-cowhide-cocoa hover:bg-golden-batter/40; }
+
+  /* Forms — herda look Tereza nos CRUDs antigos */
+  form input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+  form select,
+  form textarea {
+    @apply w-full px-3 py-2 rounded-md bg-white border-2 border-golden-batter
+           text-cowhide-cocoa transition-colors duration-200
+           focus:outline-none focus:border-deep-red;
+  }
+  form p label    { @apply block font-semibold mb-1 text-cowhide-cocoa; }
+  form .errorlist { @apply text-rose-700 list-none p-0 my-1; }
+
+  /* user-info no header legado (caso ainda apareça) */
+  .user-info { @apply ml-auto flex items-center gap-3 text-sm opacity-90; }
+}

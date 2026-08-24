@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block title %}Venda #{{ venda.pk }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:venda_list' %}">← Vendas</a></p>
+<h1>Venda #{{ venda.pk }}</h1>
+
+<table>
+    <tr><th>Data</th><td>{{ venda.data|date:'d/m/Y H:i' }}</td></tr>
+    <tr><th>Status</th><td><span class="badge {{ venda.status }}">{{ venda.get_status_display }}</span></td></tr>
+    <tr><th>Preço total</th><td>R$ {{ venda.preco }}</td></tr>
+    <tr><th>Filial</th><td>{{ venda.filial }}</td></tr>
+    <tr><th>Usuário</th><td>{{ venda.usuario }}</td></tr>
+</table>
+
+<h2>Pratos vendidos</h2>
+<table>
+    <thead><tr><th>Prato</th><th>Quantidade</th><th>Preço unit.</th></tr></thead>
+    <tbody>
+        {% for item in itens_venda %}
+        <tr>
+            <td>{{ item.prato.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>R$ {{ item.prato.preco }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem pratos nesta venda.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Insumos consumidos (calculado automaticamente)</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Quantidade</th><th>Unidade</th></tr></thead>
+    <tbody>
+        {% for item in insumos_consumidos %}
+        <tr>
+            <td>{{ item.insumo.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.insumo.get_unidade_medida_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">—</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:venda_update' venda.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:venda_delete' venda.pk %}">Excluir</a>
+</p>
+{% endblock %}

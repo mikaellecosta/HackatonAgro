@@ -1,0 +1,55 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#750A0A">
+    <title>{% block title %}Grupo Tereza Gastronomia{% endblock %}</title>
+
+    {# Restaura o estado da sidebar antes do paint pra evitar FOUC. #}
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('tereza:sidebar-collapsed') === '1') {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) { /* storage indisponível — segue padrão expandido */ }
+        })();
+    </script>
+
+    {# Design system Tereza — gerado pelo Tailwind CLI standalone (./bin/tailwindcss) #}
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-golden-batter text-cowhide-cocoa">
+
+    {% if user.is_authenticated %}
+        {% include 'core/_components/sidebar.html' %}
+        {% include 'core/_components/topbar.html' %}
+    {% endif %}
+
+    <main class="{% if user.is_authenticated %}ts-main{% else %}min-h-screen flex items-center justify-center px-4 py-12{% endif %}">
+        <div class="{% if user.is_authenticated %}ts-container py-8{% else %}w-full max-w-md{% endif %}">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {# Lucide Icons (CDN) — substitui <i data-lucide="..."> por <svg>. #}
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'js/sidebar.js' %}"></script>
+    <script>
+        if (window.lucide) { window.lucide.createIcons(); }
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

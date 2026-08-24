@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Novo{% endif %} pedido{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:pedido_list' %}">← Pedidos</a></p>
+<h1>{% if object %}Editar{% else %}Novo{% endif %} pedido</h1>
+<p style="color:#666">O tipo é sempre <strong>entrada</strong> e é preenchido automaticamente.</p>
+
+<form method="post" style="max-width:720px">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h2>Insumos pedidos</h2>
+    {{ itens_formset.management_form }}
+    <table>
+        <thead><tr><th>Insumo</th><th>Quantidade</th><th>Excluir?</th></tr></thead>
+        <tbody>
+            {% for sub in itens_formset %}
+            <tr>
+                {% for hidden in sub.hidden_fields %}{{ hidden }}{% endfor %}
+                <td>{{ sub.insumo }} {{ sub.insumo.errors }}</td>
+                <td>{{ sub.quantidade }} {{ sub.quantidade.errors }}</td>
+                <td>{{ sub.DELETE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:pedido_list' %}">Cancelar</a>
+</form>
+{% endblock %}

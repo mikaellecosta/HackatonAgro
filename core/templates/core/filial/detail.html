@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ filial.nome }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:filial_list' %}">← Filiais</a></p>
+<h1>
+    {{ filial.nome }}
+    {% if filial.is_matriz %}<span class="badge is_matriz">Matriz</span>{% endif %}
+</h1>
+
+<table>
+    <tr><th>CNPJ</th><td>{{ filial.cnpj|default:'—' }}</td></tr>
+    <tr><th>E-mail</th><td>{{ filial.email|default:'—' }}</td></tr>
+    <tr><th>Telefone</th><td>{{ filial.telefone|default:'—' }}</td></tr>
+    <tr><th>Cidade/UF</th><td>{{ filial.cidade }}{% if filial.estado %}/{{ filial.estado }}{% endif %}</td></tr>
+    <tr><th>Endereço</th><td>{{ filial.endereco|default:'—' }}</td></tr>
+    <tr><th>Gerente</th><td>{{ filial.gerente|default:'—' }}</td></tr>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:filial_update' filial.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:filial_delete' filial.pk %}">Excluir</a>
+</p>
+{% endblock %}

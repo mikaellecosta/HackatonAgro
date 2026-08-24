@@ -1,0 +1,42 @@
+{% comment %}
+    Ações de linha para tabelas CRUD — ícones Lucide.
+
+    Uso:
+        {% include 'core/_includes/row_actions.html' with
+            view_url=obj.get_absolute_url
+            edit_url=edit_url
+            delete_url=delete_url
+            label=obj.nome %}
+
+    Parâmetros (todos opcionais — omite o botão se não for passado):
+        view_url    URL do detalhe.   Renderiza ícone "olho".
+        edit_url    URL de update.    Renderiza ícone "lápis".
+        delete_url  URL de delete.    Renderiza ícone "lixeira".
+        label       Texto curto usado no aria-label/title (ex.: nome do registro).
+{% endcomment %}
+<div class="ts-row-actions">
+    {% if view_url %}
+    <a href="{{ view_url }}"
+       class="ts-icon-btn ts-icon-btn-view"
+       title="Ver{% if label %} — {{ label }}{% endif %}"
+       aria-label="Ver{% if label %} {{ label }}{% endif %}">
+        <i data-lucide="eye" class="ts-icon" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+    {% if edit_url %}
+    <a href="{{ edit_url }}"
+       class="ts-icon-btn ts-icon-btn-edit"
+       title="Editar{% if label %} — {{ label }}{% endif %}"
+       aria-label="Editar{% if label %} {{ label }}{% endif %}">
+        <i data-lucide="pencil" class="ts-icon" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+    {% if delete_url %}
+    <a href="{{ delete_url }}"
+       class="ts-icon-btn ts-icon-btn-danger"
+       title="Excluir{% if label %} — {{ label }}{% endif %}"
+       aria-label="Excluir{% if label %} {{ label }}{% endif %}">
+        <i data-lucide="trash-2" class="ts-icon" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+</div>

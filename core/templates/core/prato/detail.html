@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ prato.nome }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:prato_list' %}">← Pratos</a></p>
+<h1>
+    {{ prato.nome }}
+    {% if prato.ativo %}
+        <span class="badge concluida">ativo</span>
+    {% else %}
+        <span class="badge cancelada">inativo</span>
+    {% endif %}
+</h1>
+
+<table>
+    <tr><th>Preço</th><td>R$ {{ prato.preco }}</td></tr>
+</table>
+
+<h2>Receita</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Quantidade</th><th>Unidade</th></tr></thead>
+    <tbody>
+        {% for item in receita %}
+        <tr>
+            <td>{{ item.insumo.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.insumo.get_unidade_medida_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem receita cadastrada.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:prato_update' prato.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:prato_delete' prato.pk %}">Excluir</a>
+</p>
+{% endblock %}

@@ -1,0 +1,418 @@
+{% extends 'core/base.html' %}
+{% block title %}Painel — Tereza{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    /* Estilos isolados sob .ts-painel pra não vazar pro resto do layout
+       autenticado (sidebar/topbar usam o design system Tailwind). */
+
+    .ts-painel{
+      width: 1200px;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 10px 0 0;
+      color:#5b120d;
+      transform: scale(0.85);
+      transform-origin: top center;
+    }
+
+    .ts-painel .header{
+      text-align:center;
+      margin-bottom:15px;
+    }
+
+    .ts-painel .header h1{
+      font-size:32px;
+      font-weight:700;
+      color:#7c0d08;
+      margin-bottom:10px;
+    }
+
+    .ts-painel .header p{
+      font-size:18px;
+      color:#6e3b1c;
+    }
+
+    /* CARDS */
+    .ts-painel .cards{
+      display:grid;
+      grid-template-columns: repeat(4,1fr);
+      gap:24px;
+      margin-bottom:35px;
+    }
+
+    .ts-painel .card{
+      background:#fff;
+      border-radius:18px;
+      padding:26px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.10);
+      position:relative;
+      min-height:190px;
+    }
+
+    .ts-painel .card-icon{
+      width:54px;
+      height:54px;
+      border-radius:12px;
+      background:#8d0808;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff0d0;
+      font-size:24px;
+      margin-bottom:28px;
+    }
+
+    .ts-painel .card:nth-child(2) .card-icon{ background:#9e4a2a; }
+    .ts-painel .card:nth-child(3) .card-icon{ background:#7f360f; }
+    .ts-painel .card:nth-child(4) .card-icon{ background:#6f2023; }
+
+    .ts-painel .growth{
+      position:absolute;
+      right:24px;
+      top:38px;
+      color:#00b53f;
+      font-size:22px;
+    }
+
+    .ts-painel .card h3{
+      font-size:20px;
+      font-weight:600;
+      margin-bottom:10px;
+      color:#5b120d;
+    }
+
+    .ts-painel .number{
+      font-size:28px;
+      color:#8d1b0f;
+      margin-bottom:8px;
+    }
+
+    .ts-painel .green{
+      color:#00aa39;
+      font-size:16px;
+    }
+
+    .ts-painel .stars{
+      margin-top:10px;
+      color:#f2c400;
+      font-size:22px;
+      letter-spacing:3px;
+    }
+
+    .ts-painel .years{
+      font-size:18px;
+      margin-bottom:10px;
+      color:#8d1b0f;
+    }
+
+    .ts-painel .since{
+      font-size:16px;
+      color:#6d3a1b;
+    }
+
+    /* CONTENT */
+    .ts-painel .content{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:30px;
+    }
+
+    .ts-painel .panel{
+      background:#fff;
+      border-radius:18px;
+      padding:30px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.10);
+    }
+
+    .ts-painel .panel h2{
+      color:#8b0606;
+      margin-bottom:30px;
+      font-size:22px;
+    }
+
+    /* LISTA */
+    .ts-painel .dish{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 0;
+      border-bottom:1px solid #e4c89f;
+    }
+
+    .ts-painel .dish:last-child{ border-bottom:none; }
+
+    .ts-painel .dish-left{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+
+    .ts-painel .badge{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#8b0606;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+
+    .ts-painel .badge.b2{ background:#a14621; }
+    .ts-painel .badge.b3{ background:#8a3d12; }
+    .ts-painel .badge.b4{ background:#9b6a2c; }
+    .ts-painel .badge.b5{ background:#6c2023; }
+
+    .ts-painel .dish-name{
+      font-size:18px;
+      color:#572011;
+    }
+
+    .ts-painel .dish-value{
+      color:#9b1f12;
+      font-size:22px;
+    }
+
+    /* HORARIOS */
+    .ts-painel .schedule{ margin-bottom:35px; }
+
+    .ts-painel .schedule-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      color:#7c170f;
+      font-size:20px;
+    }
+
+    .ts-painel .schedule-top .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .ts-painel .bar{
+      width:100%;
+      height:14px;
+      background:#e0c99b;
+      border-radius:20px;
+      overflow:hidden;
+      margin-bottom:10px;
+    }
+
+    .ts-painel .fill{
+      height:100%;
+      background:#8b0606;
+      border-radius:20px;
+    }
+
+    .ts-painel .fill.jantar{
+      width:88%;
+      background:#9d2f17;
+    }
+
+    .ts-painel .fill.cafe{
+      width:62%;
+      background:#8a3d12;
+    }
+
+    .ts-painel .occupation{
+      color:#5e2415;
+      font-size:17px;
+    }
+
+    /* CHART */
+    .ts-painel .chart-container{
+      margin-top:25px;
+      height:220px;
+    }
+
+    .ts-painel canvas{
+      width:100% !important;
+      height:100% !important;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="ts-painel">
+
+    <div class="header">
+      <h1>Painel Grupo Tereza</h1>
+      <p>Acompanhe nossos números e conquistas</p>
+    </div>
+
+    <!-- CARDS -->
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-bowl-food"></i>
+        </div>
+
+        <div class="growth">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+
+        <h3>Pratos Servidos</h3>
+        <div class="number">12.847</div>
+        <div class="green">+18% este mês</div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-users"></i>
+        </div>
+
+        <div class="growth">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+
+        <h3>Clientes Atendidos</h3>
+        <div class="number">4.523</div>
+        <div class="green">+25% este mês</div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-regular fa-star"></i>
+        </div>
+
+        <h3>Avaliação Média</h3>
+        <div class="number">4.9/5.0</div>
+
+        <div class="stars">
+          ★★★★★
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-award"></i>
+        </div>
+
+        <h3>Anos de Tradição</h3>
+
+        <div class="years">31 Anos</div>
+        <div class="since">Desde 1995</div>
+      </div>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- MAIS PEDIDOS -->
+      <div class="panel">
+        <h2>Pratos Mais Pedidos</h2>
+
+        <div class="dish">
+          <div class="dish-left">
+            <div class="badge">1</div>
+            <div class="dish-name">Baião de Dois</div>
+          </div>
+          <div class="dish-value">847</div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-left">
+            <div class="badge b2">2</div>
+            <div class="dish-name">Carne de Sol</div>
+          </div>
+          <div class="dish-value">723</div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-left">
+            <div class="badge b3">3</div>
+            <div class="dish-name">Moqueca Nordestina</div>
+          </div>
+          <div class="dish-value">615</div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-left">
+            <div class="badge b4">4</div>
+            <div class="dish-name">Tapioca Recheada</div>
+          </div>
+          <div class="dish-value">498</div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-left">
+            <div class="badge b5">5</div>
+            <div class="dish-name">Acarajé</div>
+          </div>
+          <div class="dish-value">421</div>
+        </div>
+
+      </div>
+
+      <!-- HORARIOS -->
+      <div class="panel">
+
+        <h2>Horários de Pico</h2>
+
+        <div class="schedule">
+
+          <div class="schedule-top">
+            <div class="left">
+              <i class="fa-regular fa-clock"></i>
+              <span>Almoço</span>
+            </div>
+
+            <span>12h - 14h</span>
+          </div>
+
+          <div class="bar">
+            <div class="fill" style="width:95%"></div>
+          </div>
+
+          <div class="occupation">95% de ocupação</div>
+        </div>
+
+        <div class="schedule">
+
+          <div class="schedule-top">
+            <div class="left">
+              <i class="fa-regular fa-clock"></i>
+              <span>Jantar</span>
+            </div>
+
+            <span>19h - 21h</span>
+          </div>
+
+          <div class="bar">
+            <div class="fill jantar"></div>
+          </div>
+
+          <div class="occupation">88% de ocupação</div>
+        </div>
+
+        <div class="schedule">
+
+          <div class="schedule-top">
+            <div class="left">
+              <i class="fa-regular fa-clock"></i>
+              <span>Café da Tarde</span>
+            </div>
+
+            <span>16h - 18h</span>
+          </div>
+
+          <div class="bar">
+            <div class="fill cafe"></div>
+          </div>
+
+          <div class="occupation">62% de ocupação</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+{% endblock %}

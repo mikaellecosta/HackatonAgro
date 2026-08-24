@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% block title %}Início — Tereza{% endblock %}
+{% block content %}
+<h1>Olá, {{ user.first_name|default:user.username }}</h1>
+
+{% if papel == 'matriz' %}
+    <p>Você é <strong>administrador da matriz</strong>. Visão global de todas as filiais.</p>
+{% elif papel == 'gerente' %}
+    <p>Você é <strong>gerente</strong> da filial <strong>{{ filial }}</strong>.</p>
+{% else %}
+    <p class="alert-ruptura">
+        Sua conta ainda não tem papel atribuído. Procure o administrador para
+        ser vinculado a uma filial ou ao grupo Matriz.
+    </p>
+{% endif %}
+
+<h2>Indicadores</h2>
+<div class="cards">
+    {% for chave, valor in contadores.items %}
+    <div class="card">
+        <div class="num">{{ valor }}</div>
+        <div>{{ chave|title }}</div>
+    </div>
+    {% endfor %}
+    {% if faturamento_30d %}
+    <div class="card">
+        <div class="num">R$ {{ faturamento_30d|floatformat:2 }}</div>
+        <div>Faturamento 30 dias</div>
+    </div>
+    <div class="card">
+        <div class="num">R$ {{ ticket_medio_30d|floatformat:2 }}</div>
+        <div>Ticket médio 30 dias</div>
+    </div>
+    {% endif %}
+</div>
+
+{% if ruptura %}
+<h2>Insumos em ruptura</h2>
+<div class="alert-ruptura">
+    {{ ruptura|length }} insumo(s) abaixo do estoque mínimo na sua filial.
+    <a href="{% url 'core:relatorio_ruptura' %}">Ver detalhes</a> ou
+    <a href="{% url 'core:sugestao_pedido' %}">criar pedido sugerido</a>.
+</div>
+<ul>
+    {% for r in ruptura %}
+    <li>
+        <strong>{{ r.insumo.nome }}</strong>:
+        atual {{ r.estoque_atual }} / mín {{ r.estoque_minimo }}
+        <span class="badge ruptura">déficit {{ r.deficit }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

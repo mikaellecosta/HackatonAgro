@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% block title %}Pedido #{{ pedido.pk }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:pedido_list' %}">← Pedidos</a></p>
+<h1>Pedido #{{ pedido.pk }}</h1>
+
+<table>
+    <tr><th>Data</th><td>{{ pedido.data|date:'d/m/Y H:i' }}</td></tr>
+    <tr><th>Status</th><td><span class="badge {{ pedido.status }}">{{ pedido.get_status_display }}</span></td></tr>
+    <tr><th>Fornecedor</th><td><a href="{% url 'core:fornecedor_detail' pedido.fornecedor.pk %}">{{ pedido.fornecedor }}</a></td></tr>
+    <tr><th>Filial</th><td>{{ pedido.filial }}</td></tr>
+    <tr><th>Usuário</th><td>{{ pedido.usuario }}</td></tr>
+</table>
+
+<h2>Insumos pedidos</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Quantidade</th><th>Unidade</th></tr></thead>
+    <tbody>
+        {% for item in itens %}
+        <tr>
+            <td>{{ item.insumo.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.insumo.get_unidade_medida_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem itens.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:pedido_update' pedido.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:pedido_delete' pedido.pk %}">Excluir</a>
+</p>
+{% endblock %}

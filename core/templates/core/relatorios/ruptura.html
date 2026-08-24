@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block title %}Insumos em ruptura{% endblock %}
+{% block content %}
+<h1>Insumos em ruptura{% if filial %} — {{ filial }}{% endif %}</h1>
+{% include 'core/_includes/filtro_relatorio.html' %}
+
+{% if not filial %}
+    <p class="alert-ruptura">Selecione uma filial.</p>
+{% elif not em_ruptura %}
+    <p>Nenhum insumo abaixo do estoque mínimo. 🎉</p>
+{% else %}
+<p>{{ em_ruptura|length }} insumo(s) precisa(m) de reposição.
+   <a class="btn ghost" href="{% url 'core:sugestao_pedido' %}{% if filial %}?filial={{ filial.pk }}{% endif %}">Ver sugestão de pedido</a></p>
+<table>
+    <thead><tr><th>Insumo</th><th>Atual</th><th>Mínimo</th><th>Déficit</th></tr></thead>
+    <tbody>
+        {% for r in em_ruptura %}
+        <tr>
+            <td>{{ r.insumo.nome }} ({{ r.insumo.get_unidade_medida_display }})</td>
+            <td>{{ r.estoque_atual }}</td>
+            <td>{{ r.estoque_minimo }}</td>
+            <td><span class="badge ruptura">{{ r.deficit }}</span></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

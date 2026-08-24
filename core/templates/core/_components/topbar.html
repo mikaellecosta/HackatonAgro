@@ -1,0 +1,38 @@
+{% comment %}
+    Topbar — barra superior fixa.
+    - Hamburguer só aparece no mobile (abre o drawer da sidebar).
+    - O título usa o context var `page_title` (opcional); senão mostra "Painel".
+{% endcomment %}
+<header id="ts-topbar" class="ts-topbar">
+
+    <button type="button"
+            data-sidebar-mobile-toggle
+            class="ts-mobile-trigger md:hidden"
+            aria-label="Abrir menu lateral"
+            aria-controls="ts-sidebar">
+        <i data-lucide="menu" aria-hidden="true"></i>
+    </button>
+
+    <div class="ts-topbar-title">
+        <span class="text-cowhide-cocoa/70 text-sm font-medium">
+            {{ page_title|default:"Painel" }}
+        </span>
+    </div>
+
+    <div class="ts-topbar-user">
+        <span class="hidden sm:flex items-center gap-2 text-sm text-cowhide-cocoa/80">
+            <i data-lucide="user-circle-2" class="size-5" aria-hidden="true"></i>
+            <span class="font-medium text-cowhide-cocoa">{{ user }}</span>
+        </span>
+
+        <form method="post" action="{% url 'core:logout' %}" class="inline">
+            {% csrf_token %}
+            <button type="submit"
+                    class="ts-topbar-logout"
+                    title="Sair da conta">
+                <i data-lucide="log-out" aria-hidden="true" class="size-4"></i>
+                <span class="hidden md:inline">Sair</span>
+            </button>
+        </form>
+    </div>
+</header>

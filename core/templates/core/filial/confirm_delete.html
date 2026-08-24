@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir {{ filial }}{% endblock %}
+{% block content %}
+<h1>Excluir filial?</h1>
+<p>Tem certeza que deseja excluir <strong>{{ filial }}</strong>?</p>
+<p>⚠ Movimentações, pedidos e vendas dessa filial serão protegidos pelo banco —
+   se houver registros, a exclusão falhará.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:filial_detail' filial.pk %}">Cancelar</a>
+</form>
+{% endblock %}

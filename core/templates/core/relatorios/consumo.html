@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Padrões de consumo{% endblock %}
+{% block content %}
+<h1>Padrões de consumo{% if filial %} — {{ filial }}{% endif %}</h1>
+<p style="color:#666">Considera apenas movimentações de saída/desperdício <strong>concluídas</strong>
+   nos últimos {{ dias }} dia(s).</p>
+{% include 'core/_includes/filtro_relatorio.html' %}
+
+<h2>Top 10 insumos consumidos</h2>
+<table>
+    <thead><tr><th>#</th><th>Insumo</th><th>Total consumido</th></tr></thead>
+    <tbody>
+        {% for c in top_insumos %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ c.insumo__nome }}</td>
+            <td>{{ c.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem consumo no período.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Consumo completo</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Total</th></tr></thead>
+    <tbody>
+        {% for c in consumo %}
+        <tr><td>{{ c.insumo__nome }}</td><td>{{ c.total }}</td></tr>
+        {% empty %}
+        <tr><td colspan="2">—</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

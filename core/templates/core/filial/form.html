@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Nova{% endif %} filial{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:filial_list' %}">← Filiais</a></p>
+<h1>{% if object %}Editar{% else %}Nova{% endif %} filial</h1>
+
+<form method="post" style="max-width:600px">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:filial_list' %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,1 @@
+from .venda import recalcular_itens_movimentacao_da_venda_signal

@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block title %}Filiais{% endblock %}
+{% block content %}
+<h1>Filiais</h1>
+
+<div class="ts-toolbar">
+    <div class="ts-filter-group">
+        <span class="text-sm text-cowhide-cocoa/70">Filiais visíveis para o seu papel.</span>
+    </div>
+    <div class="ts-toolbar-actions">
+        <a class="btn-primary ts-filter-btn" href="{% url 'core:filial_create' %}">
+            <i data-lucide="plus" class="ts-icon" aria-hidden="true"></i>
+            Nova filial
+        </a>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Cidade/UF</th>
+            <th>Telefone</th>
+            <th>Gerente</th>
+            <th class="actions">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for f in filiais %}
+        {% url 'core:filial_detail' f.pk as view_url %}
+        {% url 'core:filial_update' f.pk as edit_url %}
+        {% url 'core:filial_delete' f.pk as delete_url %}
+        <tr>
+            <td><a href="{{ view_url }}">{{ f.nome }}</a></td>
+            <td>{% if f.is_matriz %}<span class="badge is_matriz">Matriz</span>{% else %}<span class="badge">Filial</span>{% endif %}</td>
+            <td>{{ f.cidade }}{% if f.estado %}/{{ f.estado }}{% endif %}</td>
+            <td>{{ f.telefone|default:'—' }}</td>
+            <td>{{ f.gerente|default:'—' }}</td>
+            <td class="actions">
+                {% include 'core/_includes/row_actions.html' with view_url=view_url edit_url=edit_url delete_url=delete_url label=f.nome %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-cowhide-cocoa/60 py-8">Nenhuma filial visível para o seu papel.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include 'core/_includes/paginator.html' %}
+{% endblock %}

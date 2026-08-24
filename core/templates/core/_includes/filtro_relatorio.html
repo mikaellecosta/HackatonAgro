@@ -1,0 +1,14 @@
+{# Form de filtro reutilizado nos 4 relatórios. #}
+<form method="get" style="margin-bottom:1rem">
+    {% if filiais_disponiveis %}
+        <select name="filial">
+            {% if not filial_obrigatoria %}<option value="">— todas as filiais —</option>{% endif %}
+            {% for f in filiais_disponiveis %}
+                <option value="{{ f.pk }}" {% if filial.pk == f.pk %}selected{% endif %}>{{ f.nome }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+    <input type="number" name="dias" min="1" max="365" value="{{ dias }}" style="width:90px">
+    <span style="color:#666">dias</span>
+    <button type="submit">Atualizar</button>
+</form>

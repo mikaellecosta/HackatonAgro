@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% block title %}Movimentação #{{ movimentacao.pk }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:movimentacao_list' %}">← Movimentações</a></p>
+<h1>Movimentação #{{ movimentacao.pk }}</h1>
+
+<table>
+    <tr><th>Data</th><td>{{ movimentacao.data|date:'d/m/Y H:i' }}</td></tr>
+    <tr><th>Tipo</th><td>{{ movimentacao.get_tipo_display }}</td></tr>
+    <tr><th>Status</th><td><span class="badge {{ movimentacao.status }}">{{ movimentacao.get_status_display }}</span></td></tr>
+    <tr><th>Filial</th><td>{{ movimentacao.filial }}</td></tr>
+    <tr><th>Usuário</th><td>{{ movimentacao.usuario }}</td></tr>
+</table>
+
+<h2>Itens</h2>
+<table>
+    <thead><tr><th>Insumo</th><th>Quantidade</th><th>Unidade</th></tr></thead>
+    <tbody>
+        {% for item in itens %}
+        <tr>
+            <td>{{ item.insumo.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.insumo.get_unidade_medida_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Sem itens nesta movimentação.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="actions">
+    <a class="btn" href="{% url 'core:movimentacao_update' movimentacao.pk %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:movimentacao_delete' movimentacao.pk %}">Excluir</a>
+</p>
+{% endblock %}

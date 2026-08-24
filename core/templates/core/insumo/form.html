@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Novo{% endif %} insumo{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:insumo_list' %}">← Insumos</a></p>
+<h1>{% if object %}Editar{% else %}Novo{% endif %} insumo</h1>
+
+<form method="post" style="max-width:520px">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:insumo_list' %}">Cancelar</a>
+</form>
+{% endblock %}

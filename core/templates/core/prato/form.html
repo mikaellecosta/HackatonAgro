@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Novo{% endif %} prato{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:prato_list' %}">← Pratos</a></p>
+<h1>{% if object %}Editar{% else %}Novo{% endif %} prato</h1>
+
+<form method="post" style="max-width:720px">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h2>Receita</h2>
+    {{ receita_formset.management_form }}
+    <table>
+        <thead><tr><th>Insumo</th><th>Quantidade</th><th>Excluir?</th></tr></thead>
+        <tbody>
+            {% for sub in receita_formset %}
+            <tr>
+                {% for hidden in sub.hidden_fields %}{{ hidden }}{% endfor %}
+                <td>{{ sub.insumo }} {{ sub.insumo.errors }}</td>
+                <td>{{ sub.quantidade }} {{ sub.quantidade.errors }}</td>
+                <td>{{ sub.DELETE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:prato_list' %}">Cancelar</a>
+</form>
+{% endblock %}

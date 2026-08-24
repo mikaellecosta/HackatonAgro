@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% block title %}Pratos{% endblock %}
+{% block content %}
+<h1>Pratos</h1>
+
+<form method="get" class="ts-toolbar">
+    <div class="ts-filter-group">
+        <input type="search"
+               name="q"
+               class="ts-filter-input"
+               placeholder="Buscar por nome"
+               value="{{ request.GET.q }}">
+        <select name="ativo" class="ts-filter-input">
+            <option value="">Ativos e inativos</option>
+            <option value="1" {% if request.GET.ativo == '1' %}selected{% endif %}>Apenas ativos</option>
+            <option value="0" {% if request.GET.ativo == '0' %}selected{% endif %}>Apenas inativos</option>
+        </select>
+        <button type="submit" class="btn-secondary ts-filter-btn">
+            <i data-lucide="filter" class="ts-icon" aria-hidden="true"></i>
+            Filtrar
+        </button>
+    </div>
+    <div class="ts-toolbar-actions">
+        <a class="btn-primary ts-filter-btn" href="{% url 'core:prato_create' %}">
+            <i data-lucide="plus" class="ts-icon" aria-hidden="true"></i>
+            Novo prato
+        </a>
+    </div>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Status</th>
+            <th class="actions">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in pratos %}
+        {% url 'core:prato_detail' p.pk as view_url %}
+        {% url 'core:prato_update' p.pk as edit_url %}
+        {% url 'core:prato_delete' p.pk as delete_url %}
+        <tr>
+            <td><a href="{{ view_url }}">{{ p.nome }}</a></td>
+            <td>R$ {{ p.preco }}</td>
+            <td>
+                {% if p.ativo %}
+                    <span class="badge concluida">ativo</span>
+                {% else %}
+                    <span class="badge cancelada">inativo</span>
+                {% endif %}
+            </td>
+            <td class="actions">
+                {% include 'core/_includes/row_actions.html' with view_url=view_url edit_url=edit_url delete_url=delete_url label=p.nome %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-cowhide-cocoa/60 py-8">Nenhum prato cadastrado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include 'core/_includes/paginator.html' %}
+{% endblock %}

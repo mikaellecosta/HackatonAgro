@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% block title %}Insumos{% endblock %}
+{% block content %}
+<h1>Insumos</h1>
+
+<form method="get" class="ts-toolbar">
+    <div class="ts-filter-group">
+        <input type="search"
+               name="q"
+               class="ts-filter-input"
+               placeholder="Buscar por nome"
+               value="{{ request.GET.q }}">
+        <button type="submit" class="btn-secondary ts-filter-btn">
+            <i data-lucide="search" class="ts-icon" aria-hidden="true"></i>
+            Buscar
+        </button>
+    </div>
+    <div class="ts-toolbar-actions">
+        <a class="btn-primary ts-filter-btn" href="{% url 'core:insumo_create' %}">
+            <i data-lucide="plus" class="ts-icon" aria-hidden="true"></i>
+            Novo insumo
+        </a>
+    </div>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Unidade</th>
+            <th>Estoque mínimo</th>
+            <th class="actions">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ins in insumos %}
+        {% url 'core:insumo_detail' ins.pk as view_url %}
+        {% url 'core:insumo_update' ins.pk as edit_url %}
+        {% url 'core:insumo_delete' ins.pk as delete_url %}
+        <tr>
+            <td><a href="{{ view_url }}">{{ ins.nome }}</a></td>
+            <td>{{ ins.get_unidade_medida_display }}</td>
+            <td>{{ ins.estoque_minimo }}</td>
+            <td class="actions">
+                {% include 'core/_includes/row_actions.html' with view_url=view_url edit_url=edit_url delete_url=delete_url label=ins.nome %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-cowhide-cocoa/60 py-8">Nenhum insumo cadastrado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include 'core/_includes/paginator.html' %}
+{% endblock %}

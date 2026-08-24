@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Editar{% else %}Nova{% endif %} venda{% endblock %}
+{% block content %}
+<p><a href="{% url 'core:venda_list' %}">← Vendas</a></p>
+<h1>{% if object %}Editar{% else %}Nova{% endif %} venda</h1>
+<p style="color:#666">
+    O tipo é sempre <strong>saída</strong> e os insumos consumidos são calculados
+    automaticamente a partir dos pratos vendidos.
+</p>
+
+<form method="post" style="max-width:720px">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h2>Pratos vendidos</h2>
+    {{ itens_formset.management_form }}
+    <table>
+        <thead><tr><th>Prato</th><th>Quantidade</th><th>Excluir?</th></tr></thead>
+        <tbody>
+            {% for sub in itens_formset %}
+            <tr>
+                {% for hidden in sub.hidden_fields %}{{ hidden }}{% endfor %}
+                <td>{{ sub.prato }} {{ sub.prato.errors }}</td>
+                <td>{{ sub.quantidade }} {{ sub.quantidade.errors }}</td>
+                <td>{{ sub.DELETE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Salvar</button>
+    <a class="btn ghost" href="{% url 'core:venda_list' %}">Cancelar</a>
+</form>
+{% endblock %}

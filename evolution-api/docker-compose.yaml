@@ -1,0 +1,106 @@
+# Stack do Evolution API para o projeto DevathonProject (PycharmProjects).
+# Nomes de container e volumes prefixados com `devathon_` para não colidir
+# com a stack que já roda em ~/Documentos/DevathonProject/evolution-api.
+# Portas do host: API 8081, Manager 3001 (8080/3000 já estão ocupadas).
+
+services:
+  api:
+    container_name: devathon_evolution_api
+    image: evoapicloud/evolution-api:latest
+    restart: unless-stopped
+    depends_on:
+      evolution-postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - evolution_instances:/evolution/instances
+    networks:
+      - evolution-net
+    # Permite que o container alcance o Django rodando no host via
+    # `http://host.docker.internal:8000`. No Linux essa entrada não existe
+    # por padrão — `host-gateway` resolve para o IP do host na bridge.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  frontend:
+    container_name: devathon_evolution_frontend
+    image: evoapicloud/evolution-manager:latest
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:3001:80"
+    # Override do nginx.conf da imagem: a versão upstream inclui um valor
+    # inválido em `gzip_proxied` que faz o container reiniciar em loop.
+    volumes:
+      - ./Docker/manager/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    networks:
+      - evolution-net
+
+  redis:
+    container_name: devathon_evolution_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--port", "6379", "--appendonly", "yes"]
+    volumes:
+      - evolution_redis:/data
+    networks:
+      evolution-net:
+        aliases:
+          - evolution-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  evolution-postgres:
+    container_name: devathon_evolution_postgres
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - postgres
+      - -c
+      - max_connections=1000
+      - -c
+      - listen_addresses=*
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - evolution-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  evolution_instances:
+    name: devathon_evolution_instances
+  evolution_redis:
+    name: devathon_evolution_redis
+  postgres_data:
+    name: devathon_evolution_postgres_data
+
+networks:
+  evolution-net:
+    name: devathon-evolution-net
+    driver: bridge

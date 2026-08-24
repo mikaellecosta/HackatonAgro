@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir pedido{% endblock %}
+{% block content %}
+<h1>Excluir pedido?</h1>
+<p>Tem certeza que deseja excluir o pedido #{{ pedido.pk }} para
+   <strong>{{ pedido.fornecedor }}</strong>?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:pedido_detail' pedido.pk %}">Cancelar</a>
+</form>
+{% endblock %}

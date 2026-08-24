@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir movimentação{% endblock %}
+{% block content %}
+<h1>Excluir movimentação?</h1>
+<p>Tem certeza que deseja excluir a movimentação #{{ movimentacao.pk }}
+   ({{ movimentacao.get_tipo_display }} em {{ movimentacao.data|date:'d/m/Y' }})?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:movimentacao_detail' movimentacao.pk %}">Cancelar</a>
+</form>
+{% endblock %}

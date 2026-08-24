@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir {{ prato }}{% endblock %}
+{% block content %}
+<h1>Excluir prato?</h1>
+<p>Tem certeza que deseja excluir <strong>{{ prato }}</strong>?</p>
+<p>⚠ Vendas que usaram este prato têm proteção no banco — a exclusão pode falhar.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:prato_detail' prato.pk %}">Cancelar</a>
+</form>
+{% endblock %}

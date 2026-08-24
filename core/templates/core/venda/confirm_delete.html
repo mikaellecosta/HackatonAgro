@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir venda{% endblock %}
+{% block content %}
+<h1>Excluir venda?</h1>
+<p>Tem certeza que deseja excluir a venda #{{ venda.pk }}
+   ({{ venda.data|date:'d/m/Y H:i' }} — R$ {{ venda.preco }})?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:venda_detail' venda.pk %}">Cancelar</a>
+</form>
+{% endblock %}

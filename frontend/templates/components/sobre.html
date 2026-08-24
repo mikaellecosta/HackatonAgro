@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sobre Nós</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body{
+      background:#e7d2ae;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      color:#5b120d;
+    }
+
+    .container{
+      width:1300px;
+      padding-top:60px;
+
+      /* efeito parecido com zoom 80% */
+      transform: scale(0.85);
+      transform-origin: top center;
+    }
+
+    /* HEADER */
+
+    .header{
+      text-align:center;
+      margin-bottom:70px;
+    }
+
+    .header h1{
+      color:#8b0606;
+      font-size:38px;
+      margin-bottom:20px;
+      font-weight:700;
+    }
+
+    .header p{
+      font-size:21px;
+      color:#5f2c16;
+      line-height:1.7;
+      max-width:950px;
+      margin:0 auto;
+    }
+
+    /* CARDS */
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:40px;
+    }
+
+    .card{
+      background:#fff;
+      border-radius:22px;
+      padding:50px 40px;
+      text-align:center;
+
+      box-shadow:
+      0 10px 25px rgba(0,0,0,0.10);
+    }
+
+    .icon{
+      width:90px;
+      height:90px;
+      border-radius:50%;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      margin:0 auto 30px;
+
+      color:#f4e3bf;
+      font-size:40px;
+    }
+
+    .icon.red{
+      background:#8b0606;
+    }
+
+    .icon.orange{
+      background:#a34a28;
+    }
+
+    .icon.brown{
+      background:#8a3d12;
+    }
+
+    .card h2{
+      font-size:34px;
+      margin-bottom:25px;
+      color:#8b1a0d;
+      font-weight:700;
+    }
+
+    .card p{
+      font-size:22px;
+      line-height:1.8;
+      color:#5e2816;
+    }
+
+    /* RESPONSIVO */
+
+    @media(max-width:1200px){
+
+      .container{
+        width:95%;
+        transform: scale(1);
+      }
+
+      .cards{
+        grid-template-columns:1fr;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+      <h1>Sobre Nós</h1>
+
+      <p>
+        O Grupo Tereza Gastronomia nasceu do amor pela culinária nordestina
+        e do desejo de compartilhar os sabores autênticos da nossa terra.
+      </p>
+
+    </div>
+
+    <!-- CARDS -->
+
+    <div class="cards">
+
+      <!-- CARD 1 -->
+
+      <div class="card">
+
+        <div class="icon red">
+          <i class="fa-regular fa-heart"></i>
+        </div>
+
+        <h2>Feito com Amor</h2>
+
+        <p>
+          Cada prato é preparado com ingredientes selecionados
+          e o carinho de quem valoriza a tradição culinária nordestina.
+        </p>
+
+      </div>
+
+      <!-- CARD 2 -->
+
+      <div class="card">
+
+        <div class="icon orange">
+          <i class="fa-solid fa-users"></i>
+        </div>
+
+        <h2>Família & Tradição</h2>
+
+        <p>
+          Receitas passadas de geração em geração,
+          mantendo viva a essência da cozinha nordestina
+          em cada preparo.
+        </p>
+
+      </div>
+
+      <!-- CARD 3 -->
+
+      <div class="card">
+
+        <div class="icon brown">
+          <i class="fa-solid fa-award"></i>
+        </div>
+
+        <h2>Qualidade Garantida</h2>
+
+        <p>
+          Compromisso com a excelência em cada detalhe,
+          do preparo ao atendimento, para sua experiência
+          ser inesquecível.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
