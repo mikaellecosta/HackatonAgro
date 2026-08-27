@@ -24,6 +24,6 @@
 		<a class="diagnostics-new" href="{% url 'core:diagnostico_novo' %}"><i data-lucide="plus" size="17"></i> Novo diagnóstico</a>
 	</header>
 	{% if request.GET.enviado %}<div class="diagnostics-notice" role="status"><i data-lucide="check-circle-2" size="18"></i> Diagnóstico enviado com sucesso e encaminhado para análise.</div>{% endif %}
-	<div class="diagnostics-panel"><div><div class="diagnostics-empty-icon"><i data-lucide="clipboard-list" size="30"></i></div><h2 class="diagnostics-empty-title">Nenhum diagnóstico registrado</h2><p class="diagnostics-empty-copy">Adicione imagens para criar sua primeira análise. Ela aparecerá aqui depois do envio.</p></div></div>
+	<div class="diagnostics-panel"><div><div class="diagnostics-empty-icon"><i data-lucide="clipboard-list" size="30"></i></div><h2 class="diagnostics-empty-title">Nenhum diagnóstico registrado</h2><p class="diagnostics-empty-copy">Adicione um novo diagnóstico para criar sua primeira análise. Ela aparecerá aqui depois do envio !</p></div></div>
 </section>
 {% endblock %}
