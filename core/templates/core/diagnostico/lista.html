@@ -5,15 +5,15 @@
 <style>
 	.diagnostics-page { max-width: 980px; margin: 0 auto; }
 	.diagnostics-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
-	.diagnostics-kicker { margin: 0 0 .4rem; color: #a34a25; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-	.diagnostics-title { margin: 0; color: #4a1711; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; }
-	.diagnostics-copy { max-width: 38rem; margin: .6rem 0 0; color: #765d4b; }
-	.diagnostics-new { display: inline-flex; align-items: center; gap: .45rem; border-radius: 10px; padding: .75rem 1rem; background: #4a1711; color: #fff; font-weight: 800; text-decoration: none; }
-	.diagnostics-notice { display: flex; align-items: center; gap: .65rem; margin-bottom: 1rem; border: 1px solid #b8d9bd; border-radius: 10px; padding: .85rem 1rem; background: #effaf0; color: #245b2c; }
-	.diagnostics-panel { min-height: 300px; display: grid; place-items: center; border: 1px solid rgba(117, 10, 10, .14); border-radius: 20px; padding: 2rem; background: linear-gradient(135deg, #fffdf8, #fff7e4); box-shadow: 0 18px 45px rgba(117, 10, 10, .08); text-align: center; }
-	.diagnostics-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 50%; background: #ffe1c8; color: #8b2c1d; }
-	.diagnostics-empty-title { margin: 0; color: #4a1711; font-size: 1.25rem; }
-	.diagnostics-empty-copy { max-width: 28rem; margin: .55rem auto 0; color: #765d4b; }
+	.diagnostics-kicker { margin: 0 0 .4rem; color: var(--agro-muted, #798C6C); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+	.diagnostics-title { margin: 0; color: var(--agro-primary, #21400B); font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; }
+	.diagnostics-copy { max-width: 38rem; margin: .6rem 0 0; color: var(--agro-secondary, #3F592D); }
+	.diagnostics-new { display: inline-flex; align-items: center; gap: .45rem; border-radius: 10px; padding: .75rem 1rem; background: var(--agro-primary, #21400B); color: var(--agro-white, #FFFFFF); font-weight: 800; text-decoration: none; }
+	.diagnostics-notice { display: flex; align-items: center; gap: .65rem; margin-bottom: 1rem; border: 1px solid var(--agro-line, #DCE5D7); border-radius: 10px; padding: .85rem 1rem; background: var(--agro-surface, #F4F7F1); color: var(--agro-secondary, #3F592D); }
+	.diagnostics-panel { min-height: 300px; display: grid; place-items: center; border: 1px solid var(--agro-line, #DCE5D7); border-radius: 20px; padding: 2rem; background: linear-gradient(135deg, var(--agro-white, #FFFFFF), var(--agro-surface, #F4F7F1)); box-shadow: 0 18px 45px rgba(33, 64, 11, .08); text-align: center; }
+	.diagnostics-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 50%; background: var(--agro-muted, #798C6C); color: var(--agro-white, #FFFFFF); }
+	.diagnostics-empty-title { margin: 0; color: var(--agro-primary, #21400B); font-size: 1.25rem; }
+	.diagnostics-empty-copy { max-width: 28rem; margin: .55rem auto 0; color: var(--agro-secondary, #3F592D); }
 	@media (max-width: 680px) { .diagnostics-header { display: block; } .diagnostics-new { display: flex; margin-top: 1rem; justify-content: center; } }
 </style>
 {% endblock %}

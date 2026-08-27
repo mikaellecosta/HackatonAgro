@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="theme-color" content="#750A0A">
+	<meta name="theme-color" content="#21400B">
 	<title>{% block title %}Grupo Tereza Gastronomia{% endblock %}</title>
 	<script>
 		(function () {
@@ -15,26 +15,27 @@
 		})();
 	</script>
 	<link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+	<link rel="stylesheet" href="{% static 'css/theme.css' %}">
 	<style>
-		.image-workspace { width: min(100%, 920px); margin: 2.5rem auto 0; padding: clamp(1.25rem, 3vw, 2rem); background: linear-gradient(135deg, #fffdf8 0%, #fff7e4 100%); border: 1px solid rgba(117, 10, 10, .14); border-radius: 24px; box-shadow: 0 18px 45px rgba(117, 10, 10, .1); }
+		.image-workspace { width: min(100%, 920px); margin: 2.5rem auto 0; padding: clamp(1.25rem, 3vw, 2rem); background: linear-gradient(135deg, var(--agro-white, #FFFFFF) 0%, var(--agro-surface, #F4F7F1) 100%); border: 1px solid var(--agro-line, #DCE5D7); border-radius: 24px; box-shadow: 0 18px 45px rgba(33, 64, 11, .1); }
 		.image-workspace-header { display: flex; justify-content: space-between; gap: 1rem; align-items: end; margin-bottom: 1.25rem; }
-		.image-workspace-kicker { margin: 0 0 .35rem; color: #a34a25; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-		.image-workspace-title { margin: 0; color: #4a1711; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.1; }
-		.image-workspace-copy { max-width: 32rem; margin: .5rem 0 0; color: #765d4b; font-size: .92rem; }
+		.image-workspace-kicker { margin: 0 0 .35rem; color: var(--agro-muted, #798C6C); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+		.image-workspace-title { margin: 0; color: var(--agro-primary, #21400B); font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.1; }
+		.image-workspace-copy { max-width: 32rem; margin: .5rem 0 0; color: var(--agro-secondary, #3F592D); font-size: .92rem; }
 		.image-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
-		.image-action { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid #8b2c1d; border-radius: 10px; padding: .7rem .9rem; background: #4a1711; color: #fff; cursor: pointer; font: inherit; font-size: .86rem; font-weight: 700; transition: transform .2s, background .2s; }
-		.image-action:hover { background: #2f0d09; transform: translateY(-2px); }
-		.dropzone { min-height: 235px; display: grid; place-items: center; padding: 2rem; border: 2px dashed #d99568; border-radius: 18px; background: rgba(255,255,255,.65); color: #765d4b; text-align: center; transition: border-color .2s, background .2s, transform .2s; }
-		.dropzone.is-dragging { border-color: #8b2c1d; background: #fff0e7; transform: scale(1.01); }
-		.dropzone-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto .85rem; border-radius: 50%; background: #ffe1c8; color: #8b2c1d; }
-		.dropzone strong { display: block; color: #4a1711; font-size: 1.05rem; }
+		.image-action { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--agro-secondary, #3F592D); border-radius: 10px; padding: .7rem .9rem; background: var(--agro-primary, #21400B); color: var(--agro-white, #FFFFFF); cursor: pointer; font: inherit; font-size: .86rem; font-weight: 700; transition: transform .2s, background .2s; }
+		.image-action:hover { background: var(--agro-accent, #1D400A); transform: translateY(-2px); }
+		.dropzone { min-height: 235px; display: grid; place-items: center; padding: 2rem; border: 2px dashed var(--agro-muted, #798C6C); border-radius: 18px; background: rgba(255,255,255,.65); color: var(--agro-secondary, #3F592D); text-align: center; transition: border-color .2s, background .2s, transform .2s; }
+		.dropzone.is-dragging { border-color: var(--agro-primary, #21400B); background: var(--agro-surface, #F4F7F1); transform: scale(1.01); }
+		.dropzone-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto .85rem; border-radius: 50%; background: var(--agro-muted, #798C6C); color: var(--agro-white, #FFFFFF); }
+		.dropzone strong { display: block; color: var(--agro-primary, #21400B); font-size: 1.05rem; }
 		.dropzone span { display: block; margin-top: .35rem; font-size: .86rem; }
-		.dropzone-upload { display: inline-flex; align-items: center; gap: .4rem; margin-top: .85rem; border: 1px solid #8b2c1d; border-radius: 8px; padding: .55rem .8rem; background: transparent; color: #8b2c1d; cursor: pointer; font: inherit; font-size: .84rem; font-weight: 800; }
+		.dropzone-upload { display: inline-flex; align-items: center; gap: .4rem; margin-top: .85rem; border: 1px solid var(--agro-secondary, #3F592D); border-radius: 8px; padding: .55rem .8rem; background: transparent; color: var(--agro-primary, #21400B); cursor: pointer; font: inherit; font-size: .84rem; font-weight: 800; }
 		.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .8rem; margin-top: 1rem; }
-		.image-card { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; background: #f2dfcf; box-shadow: 0 5px 15px rgba(74,23,17,.12); }
+		.image-card { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; background: var(--agro-surface, #F4F7F1); box-shadow: 0 5px 15px rgba(33,64,11,.12); }
 		.image-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
-		.image-remove { position: absolute; top: .4rem; right: .4rem; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(74,23,17,.84); color: white; cursor: pointer; }
-		.image-submit { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; margin-top: 1rem; border: 0; border-radius: 10px; padding: .85rem 1rem; background: #d66a32; color: white; cursor: pointer; font: inherit; font-weight: 800; }
+		.image-remove { position: absolute; top: .4rem; right: .4rem; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(33,64,11,.84); color: var(--agro-white, #FFFFFF); cursor: pointer; }
+		.image-submit { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; margin-top: 1rem; border: 0; border-radius: 10px; padding: .85rem 1rem; background: var(--agro-secondary, #3F592D); color: var(--agro-white, #FFFFFF); cursor: pointer; font: inherit; font-weight: 800; }
 		@media (max-width: 680px) { .image-workspace-header { display: block; } .image-actions { margin-top: 1rem; } .image-action { width: 100%; justify-content: center; } .dropzone { min-height: 190px; } }
 	</style>
 </head>

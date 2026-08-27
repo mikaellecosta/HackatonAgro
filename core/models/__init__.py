@@ -5,4 +5,4 @@ from .RecursoAgricola import RecursoAgricola
 from .Feedback import Feedback
 from .GestaoFinanceira import GestaoFinanceira
 from .MonitoramentoClimatico import MonitoramentoClimatico
-from .Insumo import Insumo
+from .insumo import Insumo

@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: Inter, sans-serif;
-    background: #f5f7fb;
+    background: var(--agro-surface, #F4F7F1);
 }
 
 .main {
@@ -11,24 +11,24 @@ body {
 .card-metric {
     border: none;
     border-radius: 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(33,64,11,0.08);
 }
 
 .table-box {
     background: white;
     border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(33,64,11,0.08);
 }
 
 .badge-ok {
-    background: #22c55e;
+    background: var(--agro-secondary, #3F592D);
 }
 
 .badge-warn {
-    background: #f59e0b;
+    background: var(--agro-muted, #798C6C);
 }
 
 .badge-bad {
-    background: #ef4444;
+    background: var(--agro-accent, #1D400A);
 }
