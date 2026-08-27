@@ -13,20 +13,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from core.models import Filial
-from core.permissions import is_gerente_filial, is_matriz
-from core.services import (
-    consumo_no_periodo,
-    estoque_por_filial,
-    faturamento_no_periodo,
-    faturamento_por_filial,
-    insumos_em_ruptura,
-    ticket_medio,
-    top_insumos_consumidos,
-    top_pratos_vendidos,
-)
-
-
 class _RelatorioContextMixin:
     """
     Resolve o escopo de filial e o período a partir dos query params.
@@ -41,36 +27,12 @@ class _RelatorioContextMixin:
     DEFAULT_DIAS = 30
     MAX_DIAS = 365
 
-    def _resolver_filial(self):
-        user = self.request.user
-        if is_gerente_filial(user) and not is_matriz(user):
-            return user.filial  # gerente trava
-        filial_id = self.request.GET.get('filial')
-        if not filial_id:
-            return None
-        return get_object_or_404(Filial, pk=filial_id)
-
     def _resolver_dias(self):
         try:
             dias = int(self.request.GET.get('dias', self.DEFAULT_DIAS))
         except (TypeError, ValueError):
             dias = self.DEFAULT_DIAS
         return max(1, min(dias, self.MAX_DIAS))
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        user = self.request.user
-        filial = self._resolver_filial()
-        ctx['filial'] = filial
-        ctx['dias'] = self._resolver_dias()
-        ctx['filial_obrigatoria'] = is_gerente_filial(user) and not is_matriz(user)
-        if is_matriz(user):
-            ctx['filiais_disponiveis'] = Filial.objects.all()
-        elif filial:
-            ctx['filiais_disponiveis'] = Filial.objects.filter(pk=filial.pk)
-        else:
-            ctx['filiais_disponiveis'] = Filial.objects.none()
-        return ctx
 
 
 class EstoqueView(LoginRequiredMixin, _RelatorioContextMixin, TemplateView):

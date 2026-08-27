@@ -1,12 +1,8 @@
-from .user import User
-from .filial import Filial
-from .fornecedor import Fornecedor, ItemFornecedor
-from .insumo import Insumo
-from .prato import Prato, ItemPrato
-from .movimentacao import (
-    Movimentacao,
-    ItemMovimentacao,
-    Pedido,
-    Venda,
-    ItemVenda,
-)
+from .Produtor import Produtor
+from .AreaPlantio import AreaPlantio
+from .DeteccaoNutri import DeteccaoDoencaNutricao
+from .RecursoAgricola import RecursoAgricola
+from .Feedback import Feedback
+from .GestaoFinanceira import GestaoFinanceira
+from .MonitoramentoClimatico import MonitoramentoClimatico
+from .Insumo import Insumo

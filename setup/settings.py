@@ -26,8 +26,7 @@ INSTALLED_APPS = [
     'core',
     'whatsapp',
 ]
-
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = "core.Produtor"
 
 # Login/logout — apontam para as URLs do app core (core/urls.py).
 LOGIN_URL = 'core:login'

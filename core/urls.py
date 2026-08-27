@@ -12,7 +12,13 @@ from django.urls import path
 
 from core import views
 from core.views import atividade_rural
-
+from core.views.insumo2 import (
+    InsumoListView,
+    InsumoDetailView,
+    InsumoCreateView,
+    InsumoUpdateView,
+    InsumoDeleteView,
+)
 
 app_name = 'core'
 
@@ -29,71 +35,15 @@ def _crud(prefix, viewset):
 
 
 urlpatterns = [
-       # Autenticação
+    path('', views.PainelView.as_view(), name='home'),
+    # Autenticação
     path(
         'login/',
         auth_views.LoginView.as_view(template_name='registration/login.html'),
         name='login',
     ),
-    path('', views.HomeView.as_view(), name='home'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
-
-urlpatterns += _crud('fornecedor', {
-    'list': views.FornecedorListView,
-    'detail': views.FornecedorDetailView,
-    'create': views.FornecedorCreateView,
-    'update': views.FornecedorUpdateView,
-    'delete': views.FornecedorDeleteView,
-})
-
-urlpatterns += _crud('filial', {
-    'list': views.FilialListView,
-    'detail': views.FilialDetailView,
-    'create': views.FilialCreateView,
-    'update': views.FilialUpdateView,
-    'delete': views.FilialDeleteView,
-})
-
-urlpatterns += _crud('insumo', {
-    'list': views.InsumoListView,
-    'detail': views.InsumoDetailView,
-    'create': views.InsumoCreateView,
-    'update': views.InsumoUpdateView,
-    'delete': views.InsumoDeleteView,
-})
-
-urlpatterns += _crud('prato', {
-    'list': views.PratoListView,
-    'detail': views.PratoDetailView,
-    'create': views.PratoCreateView,
-    'update': views.PratoUpdateView,
-    'delete': views.PratoDeleteView,
-})
-
-urlpatterns += _crud('movimentacao', {
-    'list': views.MovimentacaoListView,
-    'detail': views.MovimentacaoDetailView,
-    'create': views.MovimentacaoCreateView,
-    'update': views.MovimentacaoUpdateView,
-    'delete': views.MovimentacaoDeleteView,
-})
-
-urlpatterns += _crud('pedido', {
-    'list': views.PedidoListView,
-    'detail': views.PedidoDetailView,
-    'create': views.PedidoCreateView,
-    'update': views.PedidoUpdateView,
-    'delete': views.PedidoDeleteView,
-})
-
-urlpatterns += _crud('venda', {
-    'list': views.VendaListView,
-    'detail': views.VendaDetailView,
-    'create': views.VendaCreateView,
-    'update': views.VendaUpdateView,
-    'delete': views.VendaDeleteView,
-})
 
 # Rotas de diagnóstico por imagem | precisamos do crud do diagnostico
 urlpatterns += [ 
@@ -105,7 +55,6 @@ urlpatterns += [
     path('sensoriamento/', views.SensoriamentoView.as_view(), name='sensoriamento'),
 ]
 
-
 # Relatórios — read-only, agregam dados via core/services.
 urlpatterns += [
     path('relatorios/estoque/', views.EstoqueView.as_view(), name='relatorio_estoque'),
@@ -113,20 +62,6 @@ urlpatterns += [
     path('relatorios/ruptura/', views.RupturaView.as_view(), name='relatorio_ruptura'),
     path('relatorios/consumo/', views.ConsumoView.as_view(), name='relatorio_consumo'),
     path('relatorios/faturamento/', views.FaturamentoView.as_view(), name='relatorio_faturamento'),
-]
-
-# Solicitação guiada de insumos.
-urlpatterns += [
-    path(
-        'sugestao-pedido/',
-        views.SugestaoPedidoView.as_view(),
-        name='sugestao_pedido',
-    ),
-    path(
-        'sugestao-pedido/criar/',
-        views.CriarPedidoFromSugestaoView.as_view(),
-        name='sugestao_pedido_criar',
-    ),
 ]
 
 urlpatterns += _crud('atividade-rural', {
@@ -137,23 +72,31 @@ urlpatterns += _crud('atividade-rural', {
     'delete': views.AtividadeRuralDeleteView,
 })
 
-urlpatterns += [
-    path(
-        'atividade-rural/<int:pk>/insumos/',
-        atividade_rural.AtividadeRuralInsumoCreateView.as_view(),
-        name='atividade-rural_insumo_create',
-    ),
-    path(
-        'atividade-rural/<int:pk>/insumos/<int:consumo_id>/excluir/',
-        atividade_rural.AtividadeRuralInsumoDeleteView.as_view(),
-        name='atividade-rural_insumo_delete',
-    ),
-    path(
-        'atividade-rural/<int:pk>/insumos/<int:consumo_id>/editar/',
-        atividade_rural.AtividadeRuralInsumoUpdateView.as_view(),
-        name='atividade-rural_insumo_update',
-    ),
-]
+urlpatterns += _crud('insumo', {
+    'list': InsumoListView,
+    'detail': InsumoDetailView,
+    'create': InsumoCreateView,
+    'update': InsumoUpdateView,
+    'delete': InsumoDeleteView,
+})
+
+# urlpatterns += [
+#     path(
+#         'atividade-rural/<int:pk>/insumos/',
+#         atividade_rural.AtividadeRuralInsumoCreateView.as_view(),
+#         name='atividade-rural_insumo_create',
+#     ),
+#     path(
+#         'atividade-rural/<int:pk>/insumos/<int:consumo_id>/excluir/',
+#         atividade_rural.AtividadeRuralInsumoDeleteView.as_view(),
+#         name='atividade-rural_insumo_delete',
+#     ),
+#     path(
+#         'atividade-rural/<int:pk>/insumos/<int:consumo_id>/editar/',
+#         atividade_rural.AtividadeRuralInsumoUpdateView.as_view(),
+#         name='atividade-rural_insumo_update',
+#     ),
+# ]
 
 urlpatterns += [
     path(

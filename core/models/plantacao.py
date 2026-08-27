@@ -1,18 +1,17 @@
 from django.db import models
 
-
-class Prato(models.Model):
+class Plantacao(models.Model):
     nome = models.CharField(
         max_length=150,
         unique=True,
         verbose_name='Nome',
     )
-    preco = models.DecimalField(
+    unidade = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name='Preço',
     )
-    ativo = models.BooleanField(
+    local = models.BooleanField(
         default=True,
         verbose_name='Ativo',
         help_text='Pratos inativos não aparecem no cardápio.',
