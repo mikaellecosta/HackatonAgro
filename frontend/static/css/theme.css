@@ -1,0 +1,101 @@
+:root {
+  --agro-primary: #21400B;
+  --agro-secondary: #3F592D;
+  --agro-muted: #798C6C;
+  --agro-accent: #1D400A;
+  --agro-white: #FFFFFF;
+  --agro-surface: #F4F7F1;
+  --agro-line: #DCE5D7;
+  --color-deep-red: var(--agro-primary);
+  --color-russet-oak: var(--agro-secondary);
+  --color-toasted-caramel: var(--agro-muted);
+  --color-spiced-wine: var(--agro-accent);
+  --color-crimson-red: var(--agro-accent);
+  --color-golden-batter: var(--agro-surface);
+  --color-cowhide-cocoa: var(--agro-primary);
+  --color-deep-red-hover: var(--agro-accent);
+  --color-russet-oak-hover: var(--agro-primary);
+}
+
+body {
+  background-color: var(--agro-surface);
+  color: var(--agro-primary);
+}
+
+.bg-golden-batter { background-color: var(--agro-surface) !important; }
+.text-cowhide-cocoa { color: var(--agro-primary) !important; }
+.text-deep-red { color: var(--agro-primary) !important; }
+.text-russet-oak { color: var(--agro-secondary) !important; }
+.text-toasted-caramel { color: var(--agro-muted) !important; }
+.text-spiced-wine { color: var(--agro-accent) !important; }
+.bg-deep-red { background-color: var(--agro-primary) !important; }
+.bg-russet-oak { background-color: var(--agro-secondary) !important; }
+.border-golden-batter { border-color: var(--agro-line) !important; }
+.border-deep-red { border-color: var(--agro-primary) !important; }
+.border-russet-oak { border-color: var(--agro-secondary) !important; }
+.hover\:bg-deep-red:hover { background-color: var(--agro-primary) !important; }
+.hover\:bg-russet-oak:hover { background-color: var(--agro-secondary) !important; }
+.hover\:text-golden-batter:hover { color: var(--agro-white) !important; }
+
+.ts-sidebar-brand-icon,
+.ts-sidebar-collapse-btn,
+.ts-side-link.active .ts-side-icon {
+  color: var(--agro-muted);
+}
+
+.ts-sidebar,
+.ts-mobile-backdrop {
+  background-color: var(--agro-primary);
+}
+
+.ts-side-link.active {
+  background: var(--agro-secondary);
+  box-shadow: 0 10px 20px rgba(33, 64, 11, .28);
+}
+
+.ts-topbar {
+  border-bottom-color: var(--agro-line);
+}
+
+.ts-topbar-logout {
+  color: var(--agro-primary);
+}
+
+.ts-topbar-logout:hover {
+  background-color: var(--agro-surface);
+}
+
+.ts-card,
+.ts-toolbar,
+.table-box {
+  border-color: var(--agro-line);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost:hover {
+  background-color: var(--agro-primary) !important;
+  border-color: var(--agro-primary) !important;
+}
+
+.btn-secondary {
+  background-color: var(--agro-secondary) !important;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-ghost:hover {
+  color: var(--agro-white) !important;
+}
+
+.ts-badge,
+th {
+  background-color: var(--agro-surface);
+  color: var(--agro-primary);
+}
+
+:focus-visible {
+  outline-color: var(--agro-secondary);
+}
