@@ -187,7 +187,7 @@
         <aside class="sensor-detail-panel" aria-live="polite">
             {% for estacao in estacoes %}
             <div class="sensor-detail" data-detail="{{ estacao.id }}" {% if not forloop.first %}hidden{% endif %}>
-                <div class="sensor-detail-meta"><span>{{ estacao.area }}</span><span class="sensor-status{% if estacao.status == 'Atencao' %} attention{% endif %}">{{ estacao.status }}</span></div>
+                <div class="sensor-detail-meta"><span>{{ estacao.area }}</span><span class="sensor-status{% if estacao.status == 'Atenção' %} attention{% endif %}">{{ estacao.status }}</span></div>
                 <h2>{{ estacao.nome }}</h2>
                 <p class="sensor-detail-meta">Última leitura: {{ estacao.ultima_leitura }}</p>
                 <p>{{ estacao.descricao }}</p>
