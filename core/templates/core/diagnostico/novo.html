@@ -1,0 +1,106 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#750A0A">
+	<title>{% block title %}Grupo Tereza Gastronomia{% endblock %}</title>
+	<script>
+		(function () {
+			try {
+				if (localStorage.getItem('tereza:sidebar-collapsed') === '1') {
+					document.documentElement.classList.add('sidebar-collapsed');
+				}
+			} catch (e) { }
+		})();
+	</script>
+	<link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+	<style>
+		.image-workspace { width: min(100%, 920px); margin: 2.5rem auto 0; padding: clamp(1.25rem, 3vw, 2rem); background: linear-gradient(135deg, #fffdf8 0%, #fff7e4 100%); border: 1px solid rgba(117, 10, 10, .14); border-radius: 24px; box-shadow: 0 18px 45px rgba(117, 10, 10, .1); }
+		.image-workspace-header { display: flex; justify-content: space-between; gap: 1rem; align-items: end; margin-bottom: 1.25rem; }
+		.image-workspace-kicker { margin: 0 0 .35rem; color: #a34a25; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+		.image-workspace-title { margin: 0; color: #4a1711; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.1; }
+		.image-workspace-copy { max-width: 32rem; margin: .5rem 0 0; color: #765d4b; font-size: .92rem; }
+		.image-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+		.image-action { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid #8b2c1d; border-radius: 10px; padding: .7rem .9rem; background: #4a1711; color: #fff; cursor: pointer; font: inherit; font-size: .86rem; font-weight: 700; transition: transform .2s, background .2s; }
+		.image-action:hover { background: #2f0d09; transform: translateY(-2px); }
+		.dropzone { min-height: 235px; display: grid; place-items: center; padding: 2rem; border: 2px dashed #d99568; border-radius: 18px; background: rgba(255,255,255,.65); color: #765d4b; text-align: center; transition: border-color .2s, background .2s, transform .2s; }
+		.dropzone.is-dragging { border-color: #8b2c1d; background: #fff0e7; transform: scale(1.01); }
+		.dropzone-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto .85rem; border-radius: 50%; background: #ffe1c8; color: #8b2c1d; }
+		.dropzone strong { display: block; color: #4a1711; font-size: 1.05rem; }
+		.dropzone span { display: block; margin-top: .35rem; font-size: .86rem; }
+		.dropzone-upload { display: inline-flex; align-items: center; gap: .4rem; margin-top: .85rem; border: 1px solid #8b2c1d; border-radius: 8px; padding: .55rem .8rem; background: transparent; color: #8b2c1d; cursor: pointer; font: inherit; font-size: .84rem; font-weight: 800; }
+		.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .8rem; margin-top: 1rem; }
+		.image-card { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; background: #f2dfcf; box-shadow: 0 5px 15px rgba(74,23,17,.12); }
+		.image-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
+		.image-remove { position: absolute; top: .4rem; right: .4rem; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(74,23,17,.84); color: white; cursor: pointer; }
+		.image-submit { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; margin-top: 1rem; border: 0; border-radius: 10px; padding: .85rem 1rem; background: #d66a32; color: white; cursor: pointer; font: inherit; font-weight: 800; }
+		@media (max-width: 680px) { .image-workspace-header { display: block; } .image-actions { margin-top: 1rem; } .image-action { width: 100%; justify-content: center; } .dropzone { min-height: 190px; } }
+	</style>
+</head>
+<body class="min-h-screen bg-golden-batter text-cowhide-cocoa">
+	{% if user.is_authenticated %}
+		{% include 'core/_components/sidebar.html' %}
+		{% include 'core/_components/topbar.html' %}
+	{% endif %}
+	<main class="{% if user.is_authenticated %}ts-main{% else %}min-h-screen flex items-center justify-center px-4 py-12{% endif %}">
+		<div class="{% if user.is_authenticated %}ts-container py-8{% else %}w-full max-w-md{% endif %}">
+			{% block content %}{% endblock %}
+		</div>
+		<section class="image-workspace" aria-labelledby="image-workspace-title">
+			<div class="image-workspace-header">
+				<div>
+					<p class="image-workspace-kicker">Diagnóstico por imagem</p>
+					<h1 id="image-workspace-title" class="image-workspace-title">Adicione as imagens ou tire uma foto</h1>
+					<p class="image-workspace-copy">Organize referências visuais em uma única galeria. Você pode selecionar várias imagens de uma vez.</p>
+				</div>
+				<div class="image-actions"><button type="button" id="camera-button" class="image-action"><i data-lucide="camera" size="16"></i> Tirar foto</button></div>
+			</div>
+			<input id="image-upload" type="file" accept="image/*" multiple hidden>
+			<input id="camera-upload" type="file" accept="image/*" capture="environment" hidden>
+			<div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Arraste imagens para esta área">
+				<div>
+					<div class="dropzone-icon"><i data-lucide="image-plus" size="28"></i></div>
+					<strong>Arraste suas imagens para cá</strong>
+					<span>ou</span>
+					<label for="image-upload" class="dropzone-upload"><i data-lucide="upload" size="15"></i> Carregar imagens</label>
+				</div>
+			</div>
+			<div id="image-grid" class="image-grid" aria-live="polite"></div>
+			<button id="image-submit" class="image-submit" type="button" hidden><i data-lucide="send" size="17"></i> Enviar imagens</button>
+		</section>
+	</main>
+	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+	<script src="{% static 'js/sidebar.js' %}"></script>
+	<script>
+		if (window.lucide) { window.lucide.createIcons(); }
+		const imageInput = document.getElementById("image-upload");
+		const cameraInput = document.getElementById("camera-upload");
+		const cameraButton = document.getElementById("camera-button");
+		const dropzone = document.getElementById("dropzone");
+		const imageGrid = document.getElementById("image-grid");
+		const imageSubmit = document.getElementById("image-submit");
+		function updateSubmitButton() { imageSubmit.hidden = imageGrid.children.length === 0; }
+		function addImages(files) {
+			Array.from(files).filter(file => file.type.startsWith("image/")).forEach(file => {
+				const imageUrl = URL.createObjectURL(file);
+				const card = document.createElement("article");
+				card.className = "image-card";
+				card.innerHTML = `<img src="${imageUrl}" alt="Imagem selecionada"><button type="button" class="image-remove" aria-label="Remover imagem"><i data-lucide="x" size="16"></i></button>`;
+				card.querySelector(".image-remove").addEventListener("click", () => { URL.revokeObjectURL(imageUrl); card.remove(); updateSubmitButton(); });
+				imageGrid.appendChild(card);
+			});
+			updateSubmitButton();
+			if (window.lucide) window.lucide.createIcons();
+		}
+		imageInput.addEventListener("change", event => addImages(event.target.files));
+		cameraInput.addEventListener("change", event => addImages(event.target.files));
+		cameraButton.addEventListener("click", () => cameraInput.click());
+		["dragenter", "dragover"].forEach(name => dropzone.addEventListener(name, event => { event.preventDefault(); dropzone.classList.add("is-dragging"); }));
+		["dragleave", "drop"].forEach(name => dropzone.addEventListener(name, event => { event.preventDefault(); dropzone.classList.remove("is-dragging"); }));
+		dropzone.addEventListener("drop", event => addImages(event.dataTransfer.files));
+		dropzone.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") imageInput.click(); });
+		imageSubmit.addEventListener("click", () => { window.location.href = "{% url 'core:diagnosticos' %}?enviado=1"; });
+	</script>
+</body>
+</html>

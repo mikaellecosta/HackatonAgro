@@ -63,3 +63,8 @@ from .prato import (
     PratoListView,
     PratoUpdateView,
 )
+
+from .diagnostico import (
+    DiagnosticoListView,
+    DiagnosticoCreateView,
+)

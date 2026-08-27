@@ -101,6 +101,8 @@ urlpatterns += [
     path('relatorios/ruptura/', views.RupturaView.as_view(), name='relatorio_ruptura'),
     path('relatorios/consumo/', views.ConsumoView.as_view(), name='relatorio_consumo'),
     path('relatorios/faturamento/', views.FaturamentoView.as_view(), name='relatorio_faturamento'),
+    path('diagnosticos/', views.DiagnosticoListView.as_view(), name='diagnosticos'),
+    path('diagnosticos/novo/', views.DiagnosticoCreateView.as_view(), name='diagnostico_novo'),
 ]
 
 # Solicitação guiada de insumos.
