@@ -59,6 +59,7 @@
 			</div>
 			<input id="image-upload" type="file" accept="image/*" multiple hidden>
 			<input id="camera-upload" type="file" accept="image/*" capture="environment" hidden>
+			{% csrf_token %}
 			<div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Arraste imagens para esta área">
 				<div>
 					<div class="dropzone-icon"><i data-lucide="image-plus" size="28"></i></div>
@@ -69,6 +70,7 @@
 			</div>
 			<div id="image-grid" class="image-grid" aria-live="polite"></div>
 			<button id="image-submit" class="image-submit" type="button" hidden><i data-lucide="send" size="17"></i> Enviar imagens</button>
+			<p id="diagnostic-status" role="status" aria-live="polite"></p>
 		</section>
 	</main>
 	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -81,14 +83,16 @@
 		const dropzone = document.getElementById("dropzone");
 		const imageGrid = document.getElementById("image-grid");
 		const imageSubmit = document.getElementById("image-submit");
+		const selectedFiles = [];
 		function updateSubmitButton() { imageSubmit.hidden = imageGrid.children.length === 0; }
 		function addImages(files) {
 			Array.from(files).filter(file => file.type.startsWith("image/")).forEach(file => {
+				selectedFiles.push(file);
 				const imageUrl = URL.createObjectURL(file);
 				const card = document.createElement("article");
 				card.className = "image-card";
 				card.innerHTML = `<img src="${imageUrl}" alt="Imagem selecionada"><button type="button" class="image-remove" aria-label="Remover imagem"><i data-lucide="x" size="16"></i></button>`;
-				card.querySelector(".image-remove").addEventListener("click", () => { URL.revokeObjectURL(imageUrl); card.remove(); updateSubmitButton(); });
+				card.querySelector(".image-remove").addEventListener("click", () => { URL.revokeObjectURL(imageUrl); selectedFiles.splice(selectedFiles.indexOf(file), 1); card.remove(); updateSubmitButton(); });
 				imageGrid.appendChild(card);
 			});
 			updateSubmitButton();
@@ -101,7 +105,21 @@
 		["dragleave", "drop"].forEach(name => dropzone.addEventListener(name, event => { event.preventDefault(); dropzone.classList.remove("is-dragging"); }));
 		dropzone.addEventListener("drop", event => addImages(event.dataTransfer.files));
 		dropzone.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") imageInput.click(); });
-		imageSubmit.addEventListener("click", () => { window.location.href = "{% url 'core:diagnosticos' %}?enviado=1"; });
+		imageSubmit.addEventListener("click", async () => {
+			if (!selectedFiles.length) return;
+			const formData = new FormData();
+			selectedFiles.forEach(file => formData.append("images", file));
+			const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+			imageSubmit.disabled = true;
+			status.textContent = "Analisando imagens...";
+			try {
+				const response = await fetch("{% url 'core:diagnostico_novo' %}", { method: "POST", body: formData, headers: { "X-CSRFToken": csrfToken } });
+				const data = await response.json();
+				if (!response.ok) throw new Error(data.error || "Não foi possível analisar as imagens.");
+				window.location.href = data.redirect_url;
+			} catch (error) { status.textContent = error.message; } finally { imageSubmit.disabled = false; }
+		});
+		const status = document.getElementById("diagnostic-status");
 	</script>
 </body>
 </html>

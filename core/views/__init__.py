@@ -66,7 +66,9 @@ from .prato import (
 
 from .diagnostico import (
     DiagnosticoCreateView,
-    DiagnosticoListView
+    DiagnosticoListView,
+    DiagnosticoStatusView,
+    DiagnosticoImageView,
 )
 
 from .atividade_rural import(

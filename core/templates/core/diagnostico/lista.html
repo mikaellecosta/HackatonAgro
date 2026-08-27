@@ -14,6 +14,30 @@
 	.diagnostics-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 50%; background: var(--agro-muted, #798C6C); color: var(--agro-white, #FFFFFF); }
 	.diagnostics-empty-title { margin: 0; color: var(--agro-primary, #21400B); font-size: 1.25rem; }
 	.diagnostics-empty-copy { max-width: 28rem; margin: .55rem auto 0; color: var(--agro-secondary, #3F592D); }
+	.diagnostics-jobs { display: grid; gap: .85rem; margin-bottom: 1rem; }
+	.diagnostic-job { border: 1px solid var(--agro-line, #DCE5D7); border-radius: 12px; padding: 1rem; background: var(--agro-white, #FFFFFF); }
+	.diagnostic-job-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+	.diagnostic-job-title { margin: 0; color: var(--agro-primary, #21400B); font-size: .95rem; font-weight: 800; }
+	.diagnostic-job-date { margin: .2rem 0 0; color: var(--agro-muted, #798C6C); font-size: .72rem; }
+	.diagnostic-job-status { color: var(--agro-secondary, #3F592D); font-size: .78rem; font-weight: 700; }
+	.diagnostic-job-status.is-failed { color: var(--agro-accent, #1D400A); }
+	.diagnostic-job-progress { height: 7px; margin: .7rem 0 .55rem; overflow: hidden; border-radius: 99px; background: var(--agro-surface, #F4F7F1); }
+	.diagnostic-job-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--agro-secondary, #3F592D); transition: width .3s ease; }
+	.diagnostic-job-meta { display: flex; justify-content: space-between; gap: 1rem; color: var(--agro-muted, #798C6C); font-size: .75rem; }
+	.diagnostic-job-results { display: grid; gap: .35rem; margin: .75rem 0 0; padding: .7rem .8rem; border-left: 3px solid var(--agro-muted, #798C6C); background: var(--agro-surface, #F4F7F1); color: var(--agro-primary, #21400B); font-size: .8rem; }
+	.diagnostic-result { display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: .7rem; }
+	.diagnostic-result-image { width: 58px; height: 58px; border-radius: 7px; object-fit: cover; background: var(--agro-line, #DCE5D7); }
+	.diagnostic-result-class { display: block; color: var(--agro-primary, #21400B); font-size: .95rem; font-weight: 800; }
+	.diagnostic-result-confidence { display: block; margin-top: .2rem; color: var(--agro-secondary, #3F592D); font-size: .75rem; }
+	.diagnostic-result-link { border: 0; padding: 0; color: var(--agro-secondary, #3F592D); background: transparent; cursor: pointer; font: inherit; font-size: .75rem; font-weight: 700; }
+	.diagnostic-image-dialog { width: min(92vw, 720px); margin: auto; padding: 1rem; border: 1px solid var(--agro-line, #DCE5D7); border-radius: 12px; background: var(--agro-white, #FFFFFF); box-shadow: 0 1.5rem 4rem rgba(33,64,11,.25); }
+	.diagnostic-image-dialog::backdrop { background: rgba(33,64,11,.58); }
+	.diagnostic-image-dialog__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
+	.diagnostic-image-dialog__title { margin: 0; color: var(--agro-primary, #21400B); font-size: 1rem; font-weight: 800; }
+	.diagnostic-image-dialog__close { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 6px; color: var(--agro-primary, #21400B); background: var(--agro-surface, #F4F7F1); cursor: pointer; }
+	.diagnostic-image-dialog__image { display: block; width: 100%; max-height: 70vh; border-radius: 7px; object-fit: contain; background: var(--agro-surface, #F4F7F1); }
+	.diagnostic-image-dialog__caption { margin: .7rem 0 0; color: var(--agro-secondary, #3F592D); font-size: .8rem; }
+	.diagnostic-job-error { margin: .65rem 0 0; color: var(--agro-accent, #1D400A); font-size: .8rem; }
 	@media (max-width: 680px) { .diagnostics-header { display: block; } .diagnostics-new { display: flex; margin-top: 1rem; justify-content: center; } }
 </style>
 {% endblock %}
@@ -24,6 +48,64 @@
 		<a class="diagnostics-new" href="{% url 'core:diagnostico_novo' %}"><i data-lucide="plus" size="17"></i> Novo diagnóstico</a>
 	</header>
 	{% if request.GET.enviado %}<div class="diagnostics-notice" role="status"><i data-lucide="check-circle-2" size="18"></i> Diagnóstico enviado com sucesso e encaminhado para análise.</div>{% endif %}
-	<div class="diagnostics-panel"><div><div class="diagnostics-empty-icon"><i data-lucide="clipboard-list" size="30"></i></div><h2 class="diagnostics-empty-title">Nenhum diagnóstico registrado</h2><p class="diagnostics-empty-copy">Adicione um novo diagnóstico para criar sua primeira análise. Ela aparecerá aqui depois do envio !</p></div></div>
+	{% if diagnostic_jobs %}
+	<div class="diagnostics-jobs" aria-live="polite">
+		{% for job in diagnostic_jobs %}
+		<article class="diagnostic-job" data-diagnostic-job data-status-url="{% url 'core:diagnostico_status' job.id %}">
+			<div class="diagnostic-job-header"><div><h2 class="diagnostic-job-title">Diagnóstico {{ forloop.revcounter }}</h2><p class="diagnostic-job-date" data-job-date data-created-at="{{ job.data.created_at }}">Data: carregando...</p></div><span class="diagnostic-job-status">Aguardando...</span></div>
+			<div class="diagnostic-job-progress" aria-hidden="true"><span></span></div>
+			<div class="diagnostic-job-meta"><span data-job-count>Preparando imagens</span><span data-job-percent>0%</span></div>
+			<div class="diagnostic-job-results" data-job-results hidden></div>
+			<p class="diagnostic-job-error" data-job-error hidden></p>
+		</article>
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% if not diagnostic_jobs %}<div class="diagnostics-panel"><div><div class="diagnostics-empty-icon"><i data-lucide="clipboard-list" size="30"></i></div><h2 class="diagnostics-empty-title">Nenhum diagnóstico registrado</h2><p class="diagnostics-empty-copy">Adicione um novo diagnóstico para criar sua primeira análise. Ela aparecerá aqui depois do envio !</p></div></div>{% endif %}
 </section>
+<dialog class="diagnostic-image-dialog" id="diagnostic-image-dialog" aria-labelledby="diagnostic-image-dialog-title">
+	<div class="diagnostic-image-dialog__header"><h2 class="diagnostic-image-dialog__title" id="diagnostic-image-dialog-title">Imagem do diagnóstico</h2><button type="button" class="diagnostic-image-dialog__close" data-close-image-dialog aria-label="Fechar visualização"><i data-lucide="x" size="16"></i></button></div>
+	<img class="diagnostic-image-dialog__image" data-dialog-image alt="">
+	<p class="diagnostic-image-dialog__caption" data-dialog-caption></p>
+</dialog>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+	(async function () {
+		const jobs = document.querySelectorAll('[data-diagnostic-job]');
+		const imageDialog = document.getElementById('diagnostic-image-dialog');
+		const dialogImage = imageDialog.querySelector('[data-dialog-image]');
+		const dialogCaption = imageDialog.querySelector('[data-dialog-caption]');
+		function closeImageDialog() { imageDialog.close(); }
+		document.querySelector('[data-close-image-dialog]').addEventListener('click', closeImageDialog);
+		imageDialog.addEventListener('click', (event) => { if (event.target === imageDialog) closeImageDialog(); });
+		document.addEventListener('click', (event) => { const button = event.target.closest('[data-view-image]'); if (!button) return; dialogImage.src = button.dataset.imageUrl; dialogImage.alt = button.dataset.imageAlt; dialogCaption.textContent = button.dataset.imageCaption; imageDialog.showModal(); });
+		document.querySelectorAll('[data-job-date]').forEach((element) => { const date = new Date(element.dataset.createdAt); if (!Number.isNaN(date.valueOf())) element.textContent = `Data: ${date.toLocaleDateString('pt-BR')} às ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`; });
+		async function updateJob(job) {
+			const status = job.querySelector('.diagnostic-job-status');
+			const progress = job.querySelector('.diagnostic-job-progress span');
+			const count = job.querySelector('[data-job-count]');
+			const percent = job.querySelector('[data-job-percent]');
+			const results = job.querySelector('[data-job-results]');
+			const error = job.querySelector('[data-job-error]');
+			const response = await fetch(job.dataset.statusUrl, { headers: { 'Accept': 'application/json' } });
+			if (!response.ok) throw new Error('Não foi possível consultar o diagnóstico.');
+			const data = await response.json();
+			const value = data.total ? Math.round(data.processed / data.total * 100) : 0;
+			progress.style.width = `${value}%`;
+			percent.textContent = `${value}%`;
+			count.textContent = `${data.processed} de ${data.total} imagem(ns) analisada(s)`;
+			status.textContent = data.status === 'queued' ? 'Na fila...' : data.status === 'processing' ? 'Analisando...' : data.status === 'completed' ? 'Concluído' : 'Falhou';
+			status.classList.toggle('is-failed', data.status === 'failed');
+			if (data.results?.length) { results.hidden = false; results.replaceChildren(...data.results.map(item => { const line = document.createElement('div'); line.className = 'diagnostic-result'; const image = document.createElement('img'); image.className = 'diagnostic-result-image'; image.src = `${job.dataset.statusUrl.replace('/status/', '/imagem/')}${encodeURIComponent(item.filename)}/`; image.alt = `Imagem analisada: ${item.label}`; const info = document.createElement('div'); const label = document.createElement('strong'); label.className = 'diagnostic-result-class'; label.textContent = item.label; const confidence = document.createElement('small'); confidence.className = 'diagnostic-result-confidence'; confidence.textContent = `${item.filename} · Confiança de ${Math.round(item.confidence * 100)}%`; info.append(label, confidence); const link = document.createElement('button'); link.type = 'button'; link.className = 'diagnostic-result-link'; link.dataset.viewImage = 'true'; link.dataset.imageUrl = image.src; link.dataset.imageAlt = image.alt; link.dataset.imageCaption = `${item.label} · Confiança de ${Math.round(item.confidence * 100)}%`; link.textContent = 'Visualizar'; line.append(image, info, link); return line; })); }
+			if (data.error) { error.hidden = false; error.textContent = data.error; }
+			return data.status === 'completed' || data.status === 'failed';
+		}
+		for (const job of jobs) {
+			let finished = false;
+			while (!finished) { try { finished = await updateJob(job); } catch (requestError) { job.querySelector('[data-job-error]').hidden = false; job.querySelector('[data-job-error]').textContent = requestError.message; finished = true; } if (!finished) await new Promise(resolve => setTimeout(resolve, 1000)); }
+		}
+	}());
+</script>
 {% endblock %}

@@ -98,7 +98,9 @@ urlpatterns += _crud('venda', {
 # Rotas de diagnóstico por imagem | precisamos do crud do diagnostico
 urlpatterns += [ 
     path('diagnosticos/', views.DiagnosticoListView.as_view(), name='diagnosticos'),
-    path('diagnosticos/novo/', views.DiagnosticoCreateView.as_view(), name='diagnostico_novo')
+    path('diagnosticos/novo/', views.DiagnosticoCreateView.as_view(), name='diagnostico_novo'),
+    path('diagnosticos/<str:job_id>/status/', views.DiagnosticoStatusView.as_view(), name='diagnostico_status'),
+    path('diagnosticos/<str:job_id>/imagem/<str:filename>/', views.DiagnosticoImageView.as_view(), name='diagnostico_imagem'),
 ]
 
 urlpatterns += [
