@@ -1,0 +1,408 @@
+{% extends 'core/base.html' %}
+{% block title %}Sensoriamento{% endblock %}
+{% block content %}
+<style>
+    .sensor-page {
+        --sensor-ink: #243c34;
+        --sensor-muted: #6d7d74;
+        --sensor-line: #d9e3dc;
+        --sensor-blue: #1877d2;
+        --sensor-blue-soft: #e8f2fc;
+    }
+
+    .sensor-intro {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .sensor-intro h1 { margin-bottom: 0.25rem; }
+    .sensor-intro p { color: var(--sensor-muted); margin: 0; }
+
+    .sensor-workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
+        gap: 1.25rem;
+        align-items: stretch;
+    }
+
+    .sensor-map-panel,
+    .sensor-detail-panel {
+        background: #fff;
+        border: 1px solid var(--sensor-line);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .sensor-map-panel { min-height: 34rem; }
+
+    .sensor-panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem 1.25rem;
+        border-bottom: 1px solid var(--sensor-line);
+    }
+
+    .sensor-panel-heading h2 { margin: 0; font-size: 1.1rem; }
+    .sensor-legend { color: var(--sensor-muted); font-size: 0.8rem; }
+
+    .sensor-map {
+        position: relative;
+        min-height: 29.5rem;
+        overflow: hidden;
+        background-color: #dcebdc;
+        background-image: linear-gradient(28deg, transparent 48%, rgb(255 255 255 / 42%) 49%, transparent 51%), linear-gradient(150deg, transparent 48%, rgb(255 255 255 / 34%) 49%, transparent 51%);
+        background-size: 9rem 7rem, 11rem 8rem;
+    }
+
+    .sensor-map::after {
+        content: '';
+        position: absolute;
+        inset: 15% 8% 10% 10%;
+        border: 2px solid rgb(69 124 83 / 28%);
+        border-radius: 48% 32% 44% 28%;
+        transform: rotate(-9deg);
+        pointer-events: none;
+    }
+
+    .sensor-group-box {
+        padding: 1.25rem;
+        border-top: 1px solid var(--sensor-line);
+        background: #fbfdfb;
+        margin-top: 1.25rem;
+        border: 1px solid var(--sensor-line);
+        border-radius: 0.75rem;
+    }
+
+    .sensor-group-box h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
+    .sensor-group-box p { margin: 0.4rem 0; color: var(--sensor-muted); font-size: 0.9rem; }
+    .sensor-group-box strong { color: var(--sensor-ink); }
+
+    .sensor-marker {
+        position: absolute;
+        z-index: 1;
+        width: 1.35rem;
+        height: 1.35rem;
+        padding: 0;
+        border: 0.25rem solid #fff;
+        border-radius: 50%;
+        background: var(--sensor-blue);
+        box-shadow: 0 0 0 0.2rem rgb(24 119 210 / 25%);
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+    }
+
+    .sensor-marker:hover,
+    .sensor-marker.is-selected { background: #0d4f91; transform: translate(-50%, -50%) scale(1.2); }
+    .sensor-marker[data-station="1"] { left: 27%; top: 35%; }
+    .sensor-marker[data-station="2"] { left: 68%; top: 28%; }
+    .sensor-marker[data-station="3"] { left: 52%; top: 72%; }
+
+    .sensor-detail-panel { padding-bottom: 1.25rem; }
+    .sensor-detail { padding: 1.25rem; }
+    .sensor-detail h2 { margin: 0; color: var(--sensor-ink); font-size: 1.5rem; }
+    .sensor-detail-meta { display: flex; justify-content: space-between; gap: 1rem; color: var(--sensor-muted); font-size: 0.9rem; }
+    .sensor-status { color: #177245; font-weight: 700; }
+    .sensor-status.attention { color: #a66213; }
+    .sensor-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; margin: 1.25rem 0; }
+    .sensor-metric { position: relative; width: 100%; min-height: 6.5rem; padding: 1rem 2.75rem 0.9rem 0.9rem; border: 1px solid transparent; border-radius: 0.7rem; text-align: left; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+    .sensor-metric:hover { border-color: rgb(36 60 52 / 22%); transform: translateY(-2px); box-shadow: 0 0.55rem 1.2rem rgb(36 60 52 / 12%); }
+    .sensor-metric:focus-visible { outline: 3px solid rgb(24 119 210 / 35%); outline-offset: 2px; }
+    .sensor-metric--temperature { background: #fff0df; color: #8c4f16; }
+    .sensor-metric--humidity { background: #e3f2fb; color: #145b80; }
+    .sensor-metric--rain { background: #e6f3e7; color: #28683b; }
+    .sensor-metric-icon { position: absolute; top: 0.7rem; right: 0.7rem; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgb(255 255 255 / 68%); }
+    .sensor-metric-icon svg { width: 0.9rem; height: 0.9rem; stroke-width: 2.4; }
+    .sensor-metric small { display: block; color: var(--sensor-muted); font-size: 0.75rem; }
+    .sensor-metric strong { display: block; margin-top: 0.25rem; color: var(--sensor-ink); font-size: 1.15rem; }
+    .sensor-chart-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 1.5rem 0 0.75rem; }
+    .sensor-chart-title { margin: 0; color: var(--sensor-ink); font-size: 1rem; transition: color 300ms ease; }
+    .sensor-chart-timer { flex: 0 0 auto; display: grid; place-items: center; width: 1.65rem; height: 1.65rem; border-radius: 50%; background: conic-gradient(var(--sensor-blue) var(--timer-progress, 0deg), #e4ece6 0deg); }
+    .sensor-chart-timer::after { content: ''; width: 1.05rem; height: 1.05rem; border-radius: 50%; background: #fff; }
+    .sensor-chart { display: flex; align-items: end; gap: 0.55rem; height: 10rem; padding: 1rem 0.75rem 0; border-bottom: 1px solid var(--sensor-line); background: linear-gradient(to bottom, transparent 24%, #edf4ee 25%, transparent 26%, transparent 49%, #edf4ee 50%, transparent 51%, transparent 74%, #edf4ee 75%, transparent 76%); }
+    .sensor-chart-shell { display: grid; grid-template-columns: 2.5rem 1fr; align-items: stretch; }
+    .sensor-y-axis { display: flex; flex-direction: column; justify-content: space-between; padding: 0.7rem 0.35rem 0 0; color: var(--sensor-muted); font-size: 0.68rem; text-align: right; }
+    .sensor-chart.is-transitioning { opacity: 0.35; }
+    .sensor-bar { flex: 1; min-width: 1rem; height: calc(var(--value) * 1%); border-radius: 0.3rem 0.3rem 0 0; background: var(--sensor-blue); transition: height 500ms ease, background-color 300ms ease; }
+    .sensor-chart-labels { display: flex; justify-content: space-between; padding: 0.45rem 0.75rem; color: var(--sensor-muted); font-size: 0.75rem; }
+
+    .sensor-metric-dialog { width: min(92vw, 30rem); margin: auto; padding: 1.5rem; border: 0; border-radius: 0.75rem; box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 25%); }
+    .sensor-metric-dialog::backdrop { background: rgb(35 22 15 / 55%); }
+    .sensor-metric-dialog h2 { margin-top: 0; color: var(--sensor-ink); }
+    .sensor-metric-dialog p { color: var(--sensor-muted); }
+    .sensor-dialog-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.25rem 0; }
+    .sensor-dialog-controls label { display: grid; gap: 0.35rem; color: var(--sensor-muted); font-size: 0.78rem; font-weight: 700; }
+    .sensor-dialog-controls select { width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--sensor-line); border-radius: 0.45rem; background: #fff; color: var(--sensor-ink); }
+    .sensor-dialog-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 1rem; border-radius: 0.55rem; background: var(--sensor-blue-soft); color: var(--sensor-muted); }
+    .sensor-dialog-summary strong { color: var(--sensor-ink); font-size: 1.35rem; }
+    .sensor-history-shell { display: grid; grid-template-columns: 2.5rem 1fr; align-items: stretch; margin-top: 1rem; }
+    .sensor-history-chart { min-width: 0; height: 9rem; border-bottom: 1px solid var(--sensor-line); background: linear-gradient(to bottom, transparent 24%, #edf4ee 25%, transparent 26%, transparent 49%, #edf4ee 50%, transparent 51%, transparent 74%, #edf4ee 75%, transparent 76%); }
+    .sensor-history-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .sensor-history-line { fill: none; stroke: var(--sensor-blue); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+    .sensor-history-point { fill: #fff; stroke: var(--sensor-blue); stroke-width: 2; vector-effect: non-scaling-stroke; }
+    .sensor-history-labels { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.45rem 0.55rem; color: var(--sensor-muted); font-size: 0.7rem; }
+    .sensor-dialog-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+
+    @media (max-width: 520px) {
+        .sensor-dialog-controls { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+        .sensor-workspace { grid-template-columns: 1fr; }
+        .sensor-map-panel { min-height: 25rem; }
+        .sensor-map { min-height: 20rem; }
+    }
+
+    @media (max-width: 520px) {
+        .sensor-intro { display: block; }
+        .sensor-metrics { grid-template-columns: 1fr; }
+    }
+</style>
+
+<main class="sensor-page">
+    <div class="sensor-intro">
+        <div>
+            <h1>Monitoramento de sensores</h1>
+            <p>Selecione uma estação para acompanhar as condições do campo.</p>
+        </div>
+        <span class="badge">{{ estacoes|length }} estações conectadas</span>
+    </div>
+
+    <div class="sensor-workspace">
+        <section class="sensor-map-panel" aria-label="Mapa de estações de monitoramento">
+            <div class="sensor-panel-heading">
+                <h2>Mapa das estações</h2>
+                <span class="sensor-legend"><span class="sensor-marker" style="position: static; display: inline-block; transform: none; width: .7rem; height: .7rem; border-width: .15rem; box-shadow: none;"></span> estação</span>
+            </div>
+            <div class="sensor-map">
+                {% for estacao in estacoes %}
+                <button type="button" class="sensor-marker{% if forloop.first %} is-selected{% endif %}" data-station="{{ estacao.id }}" aria-label="Selecionar {{ estacao.nome }}"></button>
+                {% endfor %}
+            </div>
+        </section>
+
+        <aside class="sensor-detail-panel" aria-live="polite">
+            {% for estacao in estacoes %}
+            <div class="sensor-detail" data-detail="{{ estacao.id }}" {% if not forloop.first %}hidden{% endif %}>
+                <div class="sensor-detail-meta"><span>{{ estacao.area }}</span><span class="sensor-status{% if estacao.status == 'Atencao' %} attention{% endif %}">{{ estacao.status }}</span></div>
+                <h2>{{ estacao.nome }}</h2>
+                <p class="sensor-detail-meta">Última leitura: {{ estacao.ultima_leitura }}</p>
+                <p>{{ estacao.descricao }}</p>
+                <div class="sensor-metrics">
+                    <button type="button" class="sensor-metric sensor-metric--temperature" data-metric-dialog="temperatura-{{ estacao.id }}" aria-label="Ver detalhes da temperatura"><span class="sensor-metric-icon" aria-hidden="true"><i data-lucide="mouse-pointer-click"></i></span><small>Temperatura</small><strong>{{ estacao.temperatura }}</strong></button>
+                    <button type="button" class="sensor-metric sensor-metric--humidity" data-metric-dialog="umidade-{{ estacao.id }}" aria-label="Ver detalhes da umidade do solo"><span class="sensor-metric-icon" aria-hidden="true"><i data-lucide="mouse-pointer-click"></i></span><small>Umidade do solo</small><strong>{{ estacao.umidade_solo }}</strong></button>
+                    <button type="button" class="sensor-metric sensor-metric--rain" data-metric-dialog="chuva-{{ estacao.id }}" aria-label="Ver detalhes da chuva acumulada"><span class="sensor-metric-icon" aria-hidden="true"><i data-lucide="mouse-pointer-click"></i></span><small>Chuva acumulada</small><strong>{{ estacao.chuva }}</strong></button>
+                </div>
+                <div class="sensor-chart-heading">
+                    <h3 class="sensor-chart-title" data-chart-title>Umidade do solo nas últimas 6 leituras</h3>
+                    <span class="sensor-chart-timer" data-chart-timer aria-label="Tempo até a próxima métrica"></span>
+                </div>
+                <div class="sensor-chart-shell">
+                    <div class="sensor-y-axis" data-chart-y-axis><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+                    <div class="sensor-chart" data-chart-humidity="{{ estacao.leituras|join:',' }}" data-chart-temperature="{{ estacao.temperatura_leituras|join:',' }}" data-chart-rain="{{ estacao.chuva_leituras|join:',' }}">
+                        {% for leitura in estacao.leituras %}<span class="sensor-bar" style="--value: {{ leitura }}" title="{{ leitura }}%"></span>{% endfor %}
+                    </div>
+                </div>
+                <div class="sensor-chart-labels" data-chart-labels><span>05:00</span><span>08:00</span><span>10:00</span></div>
+            </div>
+            <dialog id="temperatura-{{ estacao.id }}" class="sensor-metric-dialog">
+                <h2>Temperatura - {{ estacao.nome }}</h2>
+                <div class="sensor-dialog-controls">
+                    <label>Intervalo<select data-history-range><option value="day">Dia</option><option value="week">Semana</option><option value="month">Mês</option><option value="year">Ano</option></select></label>
+                    <label>Exibição<select data-history-mode><option value="average">Média do período</option><option value="readings">Leituras</option></select></label>
+                </div>
+                <div class="sensor-dialog-summary"><span data-history-summary-label>Média do período</span><strong data-history-summary>--</strong></div>
+                <div class="sensor-history-shell"><div class="sensor-y-axis" data-history-y-axis></div><div class="sensor-history-chart" data-history-chart data-history-unit=" C" data-history-values="{{ estacao.temperatura_leituras|join:',' }}"></div></div>
+                <div class="sensor-history-labels" data-history-labels></div>
+                <p>Histórico de temperatura para acompanhar o estresse térmico das plantas.</p>
+                <div class="sensor-dialog-actions"><button type="button" class="btn" data-close-dialog>Fechar</button></div>
+            </dialog>
+            <dialog id="umidade-{{ estacao.id }}" class="sensor-metric-dialog">
+                <h2>Umidade do solo - {{ estacao.nome }}</h2>
+                <div class="sensor-dialog-controls">
+                    <label>Intervalo<select data-history-range><option value="day">Dia</option><option value="week">Semana</option><option value="month">Mês</option><option value="year">Ano</option></select></label>
+                    <label>Exibição<select data-history-mode><option value="average">Média do período</option><option value="readings">Leituras</option></select></label>
+                </div>
+                <div class="sensor-dialog-summary"><span data-history-summary-label>Média do período</span><strong data-history-summary>--</strong></div>
+                <div class="sensor-history-shell"><div class="sensor-y-axis" data-history-y-axis></div><div class="sensor-history-chart" data-history-chart data-history-unit="%" data-history-values="{{ estacao.leituras|join:',' }}"></div></div>
+                <div class="sensor-history-labels" data-history-labels></div>
+                <p>Histórico de umidade para avaliar a necessidade de irrigação.</p>
+                <div class="sensor-dialog-actions"><button type="button" class="btn" data-close-dialog>Fechar</button></div>
+            </dialog>
+            <dialog id="chuva-{{ estacao.id }}" class="sensor-metric-dialog">
+                <h2>Chuva acumulada - {{ estacao.nome }}</h2>
+                <div class="sensor-dialog-controls">
+                    <label>Intervalo<select data-history-range><option value="day">Dia</option><option value="week">Semana</option><option value="month">Mês</option><option value="year">Ano</option></select></label>
+                    <label>Exibição<select data-history-mode><option value="average">Média do período</option><option value="readings">Leituras</option></select></label>
+                </div>
+                <div class="sensor-dialog-summary"><span data-history-summary-label>Média do período</span><strong data-history-summary>--</strong></div>
+                <div class="sensor-history-shell"><div class="sensor-y-axis" data-history-y-axis></div><div class="sensor-history-chart" data-history-chart data-history-unit=" mm" data-history-values="{{ estacao.chuva_leituras|join:',' }}"></div></div>
+                <div class="sensor-history-labels" data-history-labels></div>
+                <p>Histórico de chuva para apoiar a programação de irrigação.</p>
+                <div class="sensor-dialog-actions"><button type="button" class="btn" data-close-dialog>Fechar</button></div>
+            </dialog>
+            {% endfor %}
+        </aside>
+    </div>
+
+    <section class="sensor-group-box" aria-label="Descrição do grupo de sensores">
+        <h2>Grupo de sensores</h2>
+        <p><strong>Nome:</strong> Rede Agro Tereza</p>
+        <p><strong>Localização:</strong> Fazenda Tereza, Sertão Central - CE (lat: -6.4047, long: -38.8541)</p>
+        <p><strong>Descrição:</strong> Conjunto de estações para monitorar umidade do solo, temperatura e chuva nas áreas produtivas.</p>
+    </section>
+</main>
+
+<script>
+    const chartMetrics = {
+        humidity: { title: 'Umidade do solo nas últimas 6 leituras', color: '#1877d2', unit: '%' },
+        temperature: { title: 'Temperatura nas últimas 6 leituras', color: '#d9822b', unit: ' C' },
+        rain: { title: 'Chuva acumulada nas últimas 6 leituras', color: '#39834d', unit: ' mm' },
+    };
+
+    const historyRanges = {
+        day: { count: 6, labels: ['05:00', '08:00', '10:00', '12:00', '15:00', '18:00'] },
+        week: { count: 7, labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] },
+        month: { count: 8, labels: ['1', '5', '10', '15', '20', '25', '28', '30'] },
+        year: { count: 12, labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'] },
+    };
+
+    function renderHistory(dialog) {
+        const chart = dialog.querySelector('[data-history-chart]');
+        const labels = dialog.querySelector('[data-history-labels]');
+        const yAxis = dialog.querySelector('[data-history-y-axis]');
+        const summary = dialog.querySelector('[data-history-summary]');
+        const summaryLabel = dialog.querySelector('[data-history-summary-label]');
+        const range = historyRanges[dialog.querySelector('[data-history-range]').value];
+        const mode = dialog.querySelector('[data-history-mode]').value;
+        const sourceValues = chart.dataset.historyValues.split(',').map(Number);
+        const values = Array.from({ length: range.count }, function (_, index) {
+            return sourceValues[index % sourceValues.length];
+        });
+        const maximum = Math.max(...values, 1);
+        const average = values.reduce(function (total, value) { return total + value; }, 0) / values.length;
+        const displayedValue = mode === 'average' ? average : values[values.length - 1];
+
+        summaryLabel.textContent = mode === 'average' ? 'Média do período' : 'Última leitura';
+        summary.textContent = displayedValue.toFixed(1).replace('.0', '') + chart.dataset.historyUnit;
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        const points = values.map(function (value, index) {
+            const x = values.length === 1 ? 50 : (index / (values.length - 1)) * 100;
+            const y = 96 - (value / maximum) * 88;
+            return { x: x, y: y, value: value };
+        });
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+        line.classList.add('sensor-history-line');
+        line.setAttribute('points', points.map(function (point) { return point.x + ',' + point.y; }).join(' '));
+        svg.appendChild(line);
+        points.forEach(function (point) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.classList.add('sensor-history-point');
+            circle.setAttribute('cx', point.x);
+            circle.setAttribute('cy', point.y);
+            circle.setAttribute('r', '2.2');
+            circle.setAttribute('aria-label', point.value + chart.dataset.historyUnit);
+            const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+            tooltip.textContent = point.value + chart.dataset.historyUnit;
+            circle.appendChild(tooltip);
+            svg.appendChild(circle);
+        });
+        chart.replaceChildren(svg);
+        yAxis.replaceChildren(...[maximum, maximum * 0.75, maximum * 0.5, maximum * 0.25, 0].map(function (value) {
+            const item = document.createElement('span');
+            item.textContent = Number.isInteger(value) ? value : value.toFixed(1);
+            return item;
+        }));
+        labels.replaceChildren(...range.labels.map(function (label) {
+            const item = document.createElement('span');
+            item.textContent = label;
+            return item;
+        }));
+    }
+
+    document.querySelectorAll('.sensor-metric-dialog').forEach(function (dialog) {
+        dialog.querySelectorAll('[data-history-range], [data-history-mode]').forEach(function (control) {
+            control.addEventListener('change', function () { renderHistory(dialog); });
+        });
+        renderHistory(dialog);
+    });
+
+    function updateSensorChart(detail, metricName) {
+        const chart = detail.querySelector('[data-chart-humidity]');
+        const title = detail.querySelector('[data-chart-title]');
+        const labels = detail.querySelector('[data-chart-labels]');
+        const yAxis = detail.querySelector('[data-chart-y-axis]');
+        const metric = chartMetrics[metricName];
+        const values = chart.dataset['chart' + metricName[0].toUpperCase() + metricName.slice(1)].split(',').map(Number);
+        const maximum = Math.max(...values, 1);
+        yAxis.replaceChildren(...[maximum, maximum * 0.75, maximum * 0.5, maximum * 0.25, 0].map(function (value) {
+            const item = document.createElement('span');
+            item.textContent = Number.isInteger(value) ? value : value.toFixed(1);
+            return item;
+        }));
+
+        chart.classList.add('is-transitioning');
+        window.setTimeout(function () {
+            title.textContent = metric.title;
+            title.style.color = metric.color;
+            chart.replaceChildren(...values.map(function (value) {
+                const bar = document.createElement('span');
+                bar.className = 'sensor-bar';
+                bar.style.setProperty('--value', (value / maximum) * 100);
+                bar.style.backgroundColor = metric.color;
+                bar.title = value + metric.unit;
+                return bar;
+            }));
+            labels.innerHTML = '<span>05:00</span><span>08:00</span><span>10:00</span>';
+            chart.classList.remove('is-transitioning');
+        }, 260);
+    }
+
+    document.querySelectorAll('.sensor-detail[data-detail]').forEach(function (detail) {
+        let metricIndex = 0;
+        const metricNames = ['humidity', 'temperature', 'rain'];
+        const timer = detail.querySelector('[data-chart-timer]');
+        const transitionDuration = 12000;
+        let nextTransition = Date.now() + transitionDuration;
+
+        window.setInterval(function () {
+            const remaining = Math.max(0, nextTransition - Date.now());
+            const progress = ((transitionDuration - remaining) / transitionDuration) * 360;
+            timer.style.setProperty('--timer-progress', progress + 'deg');
+
+            if (remaining === 0) {
+                metricIndex = (metricIndex + 1) % metricNames.length;
+                updateSensorChart(detail, metricNames[metricIndex]);
+                nextTransition = Date.now() + transitionDuration;
+            }
+        }, 100);
+    });
+
+    document.querySelectorAll('.sensor-marker[data-station]').forEach(function (marker) {
+        marker.addEventListener('click', function () {
+            const stationId = marker.dataset.station;
+            document.querySelectorAll('.sensor-marker[data-station]').forEach(function (item) {
+                item.classList.toggle('is-selected', item === marker);
+            });
+            document.querySelectorAll('.sensor-detail[data-detail]').forEach(function (detail) {
+                detail.hidden = detail.dataset.detail !== stationId;
+            });
+        });
+    });
+
+    document.querySelectorAll('[data-metric-dialog]').forEach(function (metric) {
+        metric.addEventListener('click', function () {
+            document.getElementById(metric.dataset.metricDialog).showModal();
+        });
+    });
+    document.querySelectorAll('[data-close-dialog]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            button.closest('dialog').close();
+        });
+    });
+</script>
+{% endblock %}

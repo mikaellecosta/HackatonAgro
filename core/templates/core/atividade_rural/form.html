@@ -1,0 +1,107 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if atividade %}Editar Atividade{% else %}Nova Atividade{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if atividade %}Editar Atividade Rural{% else %}Nova Atividade Rural{% endif %}</h1>
+
+{% if atividade %}
+    {% url 'core:atividade-rural_update' atividade.id as form_action %}
+{% else %}
+    {% url 'core:atividade-rural_create' as form_action %}
+{% endif %}
+
+<form method="post" action="{{ form_action }}" class="ts-form">
+    {% csrf_token %}
+
+    <div class="ts-form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" name="titulo" placeholder="Ex: Preparo do Solo"
+               value="{{ atividade.titulo|default:'' }}" required>
+    </div>
+
+    <div class="ts-form-group">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" name="tipo" onchange="toggleTipoOutro(this.value)">
+            <option value="Plantio" {% if atividade.tipo == 'Plantio' %}selected{% endif %}>Plantio</option>
+            <option value="Colheita" {% if atividade.tipo == 'Colheita' %}selected{% endif %}>Colheita</option>
+            <option value="Pecuária" {% if atividade.tipo == 'Pecuária' %}selected{% endif %}>Pecuária</option>
+            <option value="Irrigação" {% if atividade.tipo == 'Irrigação' %}selected{% endif %}>Irrigação</option>
+            <option value="Manutenção de Cercas" {% if atividade.tipo == 'Manutenção de Cercas' %}selected{% endif %}>Manutenção de Cercas</option>
+            <option value="outro"
+                {% if atividade.tipo and atividade.tipo not in tipos_fixos %}selected{% endif %}>
+                Outro
+            </option>
+        </select>
+    </div>
+
+    <div class="ts-form-group" id="tipo-outro-group" style="display: none;">
+        <label for="tipo_outro">Especifique o tipo</label>
+        <input type="text" id="tipo_outro" name="tipo_outro" placeholder="Especifique o tipo de atividade"
+               value="{% if atividade.tipo and atividade.tipo not in tipos_fixos %}{{ atividade.tipo }}{% endif %}">
+    </div>
+
+    <div class="ts-form-group">
+        <label for="status">Status</label>
+        <input type="text" id="status" name="status" value="Em andamento"
+               value="{{ atividade.status|default:'' }}">
+    </div>
+
+    <div class="ts-form-group">
+        <label for="num_integrantes">Número de integrantes</label>
+        <input type="number" id="num_integrantes" name="num_integrantes" min="0"
+               value="{{ atividade.num_integrantes|default:'' }}">
+    </div>
+
+    <div class="ts-form-row">
+        <div class="ts-form-group">
+            <label for="latitude">Latitude</label>
+            <input type="text" id="latitude" name="latitude" placeholder="-6.4011"
+                   value="{{ atividade.latitude|default:'' }}">
+        </div>
+
+        <div class="ts-form-group">
+            <label for="longitude">Longitude</label>
+            <input type="text" id="longitude" name="longitude" placeholder="-38.8578"
+                   value="{{ atividade.longitude|default:'' }}">
+        </div>
+    </div>
+
+    <div class="ts-form-group">
+        <label for="data_inicio">Data de início</label>
+        <input type="date" id="data_inicio" name="data_inicio"
+               value="{{ atividade.data_inicio|default:'' }}" required>
+    </div>
+
+    <div class="ts-form-group">
+        <label for="data_termino">Data de término</label>
+        <input type="date" id="data_termino" name="data_termino"
+               value="{{ atividade.data_termino|default:'' }}">
+    </div>
+
+    <div class="ts-form-actions">
+        <a class="btn-secondary" href="{% url 'core:atividade-rural_list' %}">Cancelar</a>
+        <button type="submit" class="btn-primary">
+            <i data-lucide="check" class="ts-icon" aria-hidden="true"></i>
+            Salvar
+        </button>
+    </div>
+</form>
+
+<script>
+    function toggleTipoOutro(value) {
+        const group = document.getElementById('tipo-outro-group');
+        const input = document.getElementById('tipo_outro');
+        if (value === 'outro') {
+            group.style.display = 'block';
+            input.required = true;
+        } else {
+            group.style.display = 'none';
+            input.required = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('tipo');
+        toggleTipoOutro(select.value);
+    });
+</script>
+{% endblock %}

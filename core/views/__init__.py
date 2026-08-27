@@ -63,3 +63,18 @@ from .prato import (
     PratoListView,
     PratoUpdateView,
 )
+
+from .diagnostico import (
+    DiagnosticoCreateView,
+    DiagnosticoListView
+)
+
+from .atividade_rural import(
+    AtividadeRuralListView,
+    AtividadeRuralDetailView,
+    AtividadeRuralCreateView,
+    AtividadeRuralUpdateView,
+    AtividadeRuralCompleteView,
+    AtividadeRuralDeleteView
+)
+from .sensoriamento import SensoriamentoView

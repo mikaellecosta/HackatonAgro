@@ -11,6 +11,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from core import views
+from core.views import atividade_rural
 
 
 app_name = 'core'
@@ -94,6 +95,17 @@ urlpatterns += _crud('venda', {
     'delete': views.VendaDeleteView,
 })
 
+# Rotas de diagnóstico por imagem | precisamos do crud do diagnostico
+urlpatterns += [ 
+    path('diagnosticos/', views.DiagnosticoListView.as_view(), name='diagnosticos'),
+    path('diagnosticos/novo/', views.DiagnosticoCreateView.as_view(), name='diagnostico_novo')
+]
+
+urlpatterns += [
+    path('sensoriamento/', views.SensoriamentoView.as_view(), name='sensoriamento'),
+]
+
+
 # Relatórios — read-only, agregam dados via core/services.
 urlpatterns += [
     path('relatorios/estoque/', views.EstoqueView.as_view(), name='relatorio_estoque'),
@@ -114,5 +126,39 @@ urlpatterns += [
         'sugestao-pedido/criar/',
         views.CriarPedidoFromSugestaoView.as_view(),
         name='sugestao_pedido_criar',
+    ),
+]
+
+urlpatterns += _crud('atividade-rural', {
+    'list': views.AtividadeRuralListView,
+    'detail': views.AtividadeRuralDetailView,
+    'create': views.AtividadeRuralCreateView,
+    'update': views.AtividadeRuralUpdateView,
+    'delete': views.AtividadeRuralDeleteView,
+})
+
+urlpatterns += [
+    path(
+        'atividade-rural/<int:pk>/insumos/',
+        atividade_rural.AtividadeRuralInsumoCreateView.as_view(),
+        name='atividade-rural_insumo_create',
+    ),
+    path(
+        'atividade-rural/<int:pk>/insumos/<int:consumo_id>/excluir/',
+        atividade_rural.AtividadeRuralInsumoDeleteView.as_view(),
+        name='atividade-rural_insumo_delete',
+    ),
+    path(
+        'atividade-rural/<int:pk>/insumos/<int:consumo_id>/editar/',
+        atividade_rural.AtividadeRuralInsumoUpdateView.as_view(),
+        name='atividade-rural_insumo_update',
+    ),
+]
+
+urlpatterns += [
+    path(
+        'atividade-rural/<int:pk>/concluir/',
+        views.AtividadeRuralCompleteView.as_view(),
+        name='atividade-rural_complete',
     ),
 ]

@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Diagnósticos{% endblock %}
+{% block extra_head %}
+<style>
+	.diagnostics-page { max-width: 980px; margin: 0 auto; }
+	.diagnostics-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+	.diagnostics-kicker { margin: 0 0 .4rem; color: #a34a25; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+	.diagnostics-title { margin: 0; color: #4a1711; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; }
+	.diagnostics-copy { max-width: 38rem; margin: .6rem 0 0; color: #765d4b; }
+	.diagnostics-new { display: inline-flex; align-items: center; gap: .45rem; border-radius: 10px; padding: .75rem 1rem; background: #4a1711; color: #fff; font-weight: 800; text-decoration: none; }
+	.diagnostics-notice { display: flex; align-items: center; gap: .65rem; margin-bottom: 1rem; border: 1px solid #b8d9bd; border-radius: 10px; padding: .85rem 1rem; background: #effaf0; color: #245b2c; }
+	.diagnostics-panel { min-height: 300px; display: grid; place-items: center; border: 1px solid rgba(117, 10, 10, .14); border-radius: 20px; padding: 2rem; background: linear-gradient(135deg, #fffdf8, #fff7e4); box-shadow: 0 18px 45px rgba(117, 10, 10, .08); text-align: center; }
+	.diagnostics-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 50%; background: #ffe1c8; color: #8b2c1d; }
+	.diagnostics-empty-title { margin: 0; color: #4a1711; font-size: 1.25rem; }
+	.diagnostics-empty-copy { max-width: 28rem; margin: .55rem auto 0; color: #765d4b; }
+	@media (max-width: 680px) { .diagnostics-header { display: block; } .diagnostics-new { display: flex; margin-top: 1rem; justify-content: center; } }
+</style>
+{% endblock %}
+{% block content %}
+<section class="diagnostics-page" aria-labelledby="diagnostics-title">
+	<header class="diagnostics-header">
+		<div><p class="diagnostics-kicker">Central de análises</p><h1 id="diagnostics-title" class="diagnostics-title">Gerenciar diagnósticos</h1><p class="diagnostics-copy">Acompanhe suas análises e inicie um novo diagnóstico sempre que precisar.</p></div>
+		<a class="diagnostics-new" href="{% url 'core:diagnostico_novo' %}"><i data-lucide="plus" size="17"></i> Novo diagnóstico</a>
+	</header>
+	{% if request.GET.enviado %}<div class="diagnostics-notice" role="status"><i data-lucide="check-circle-2" size="18"></i> Diagnóstico enviado com sucesso e encaminhado para análise.</div>{% endif %}
+	<div class="diagnostics-panel"><div><div class="diagnostics-empty-icon"><i data-lucide="clipboard-list" size="30"></i></div><h2 class="diagnostics-empty-title">Nenhum diagnóstico registrado</h2><p class="diagnostics-empty-copy">Adicione um novo diagnóstico para criar sua primeira análise. Ela aparecerá aqui depois do envio !</p></div></div>
+</section>
+{% endblock %}

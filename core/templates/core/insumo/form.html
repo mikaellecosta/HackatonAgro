@@ -2,12 +2,66 @@
 {% block title %}{% if object %}Editar{% else %}Novo{% endif %} insumo{% endblock %}
 {% block content %}
 <p><a href="{% url 'core:insumo_list' %}">← Insumos</a></p>
-<h1>{% if object %}Editar{% else %}Novo{% endif %} insumo</h1>
+<h1>{% if insumo %}Editar{% else %}Novo{% endif %} insumo agricola</h1>
 
 <form method="post" style="max-width:520px">
     {% csrf_token %}
-    {{ form.as_p }}
+    <p>
+        <label for="id_nome">Nome</label>
+        <input id="id_nome" name="nome" value="{{ insumo.nome|default:'' }}" required>
+    </p>
+    <p>
+        <label for="id_categoria">Categoria</label>
+        <select id="id_categoria" name="categoria" onchange="toggleCategoriaOutro(this.value)">
+            {% for categoria in categorias %}
+            {% if categoria == 'Outros' %}
+            <option value="outro" {% if not insumo or insumo.categoria not in categorias %}selected{% endif %}>{{ categoria }}</option>
+            {% else %}
+            <option value="{{ categoria }}" {% if insumo.categoria == categoria %}selected{% endif %}>{{ categoria }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </p>
+    <p id="categoria-outro-group" style="display: none;">
+        <label for="id_categoria_outro">Especifique a categoria</label>
+        <input id="id_categoria_outro" name="categoria_outro" placeholder="Ex: Corretivo de solo"
+               value="{% if insumo.categoria and insumo.categoria not in categorias %}{{ insumo.categoria }}{% endif %}">
+    </p>
+    <p>
+        <label for="id_cultura">Cultura ou criação</label>
+        <input id="id_cultura" name="cultura" value="{{ insumo.cultura|default:'' }}">
+    </p>
+    <p>
+        <label for="id_unidade_medida">Unidade de medida</label>
+        <select id="id_unidade_medida" name="unidade_medida">
+            {% for unidade in unidades_medida %}
+            <option value="{{ unidade }}" {% if insumo.unidade_medida == unidade %}selected{% endif %}>{{ unidade }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label for="id_estoque_atual">Estoque atual</label>
+        <input id="id_estoque_atual" name="estoque_atual" type="number" min="0" value="{{ insumo.estoque_atual|default:0 }}">
+    </p>
+    <p>
+        <label for="id_estoque_minimo">Estoque mínimo</label>
+        <input id="id_estoque_minimo" name="estoque_minimo" type="number" min="0" value="{{ insumo.estoque_minimo|default:0 }}">
+    </p>
     <button type="submit">Salvar</button>
     <a class="btn ghost" href="{% url 'core:insumo_list' %}">Cancelar</a>
 </form>
+
+<script>
+    function toggleCategoriaOutro(value) {
+        const group = document.getElementById('categoria-outro-group');
+        const input = document.getElementById('id_categoria_outro');
+        const isOutro = value === 'outro';
+        group.style.display = isOutro ? 'block' : 'none';
+        input.required = isOutro;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleCategoriaOutro(document.getElementById('id_categoria').value);
+    });
+</script>
 {% endblock %}
