@@ -1,90 +1,87 @@
 """
-Mixins reutilizáveis para as CBVs do core.
+Mixins reutilizáveis para as CBVs do core (AgroTech).
 
-Espelham o que o admin faz em `core/admin/mixins.py`, mas para views públicas:
-- restringem listagem por filial do gerente
-- pré-preenchem filial/usuário ao salvar
-- bloqueiam acesso pra quem não é matriz
+- restringem listagem pelo produtor dono do registro
+- pré-preenchem o produtor ao salvar formulários
+- bloqueiam acesso para quem não é administrador do sistema
 """
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from core.permissions import is_gerente_filial, is_matriz
+# ==========================================
+# Funções auxiliares de permissão
+# ==========================================
+def is_admin(user):
+    """Verifica se o usuário é administrador (equipe do Hackathon/suporte)."""
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+def is_produtor(user):
+    """Verifica se o usuário é um produtor comum."""
+    return user.is_authenticated and not is_admin(user)
 
 
-class MatrizRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Bloqueia acesso pra quem não é matriz (superuser ou grupo Matriz)."""
-
+# ==========================================
+# Mixins de Bloqueio de Tela
+# ==========================================
+class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Bloqueia acesso pra quem não é Administrador do sistema."""
+    
     def test_func(self):
-        return is_matriz(self.request.user)
+        return is_admin(self.request.user)
 
 
-class GerenteFilialRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Permite apenas gerente de filial OU matriz."""
-
-    def test_func(self):
-        user = self.request.user
-        return is_matriz(user) or is_gerente_filial(user)
-
-
-class FilialScopedQuerysetMixin:
+# ==========================================
+# Mixins de Filtragem de Dados (Segurança)
+# ==========================================
+class ProdutorScopedQuerysetMixin:
     """
-    Filtra o queryset por filial do gerente logado.
+    Filtra o queryset pelo produtor logado.
 
-    - Matriz vê tudo.
-    - Gerente vê apenas registros cuja filial bate com `request.user.filial`.
-    - Demais usuários autenticados recebem queryset vazio.
+    - Admin vê tudo.
+    - Produtor vê apenas registros cujo campo produtor bate com ele mesmo.
+    - Demais usuários recebem queryset vazio.
 
     Configurável via:
-        filial_lookup — caminho ORM (default 'filial', use 'pk' para FilialList).
+        produtor_lookup — nome do campo no banco (default 'produtor').
     """
-    filial_lookup = 'filial'
+    produtor_lookup = 'produtor'
 
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        if is_matriz(user):
+        
+        if is_admin(user):
             return qs
-        if is_gerente_filial(user):
-            filial = user.filial
-            if filial is not None:
-                return qs.filter(**{self.filial_lookup: filial.pk})
+            
+        if is_produtor(user):
+            # Filtra dinamicamente: ex: qs.filter(produtor=user)
+            return qs.filter(**{self.produtor_lookup: user})
+            
         return qs.none()
 
 
-class FilialScopedFormMixin:
+class ProdutorScopedFormMixin:
     """
-    Esconde `filial`/`usuario` do form e os preenche automaticamente para
-    o gerente de filial — matriz continua escolhendo manualmente.
+    Esconde o campo `produtor` do form e o preenche automaticamente para
+    o produtor comum — Admin continua escolhendo manualmente se quiser.
 
-    - get_form remove os campos do formulário quando o usuário é gerente
-      (mesmo que estejam declarados no Meta.fields do ModelForm).
-    - form_valid preenche os campos no instance antes de salvar.
-
-    Configurável:
-        autopopular_filial / autopopular_usuario — bool, defaults True.
+    - get_form: remove o campo do formulário visualmente.
+    - form_valid: preenche o campo nos bastidores antes de salvar no banco.
     """
-    autopopular_filial = True
-    autopopular_usuario = True
-
-    def _eh_gerente_puro(self):
-        user = self.request.user
-        return is_gerente_filial(user) and not is_matriz(user)
+    autopopular_produtor = True
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        if self._eh_gerente_puro():
-            if self.autopopular_filial and 'filial' in form.fields:
-                del form.fields['filial']
-            if self.autopopular_usuario and 'usuario' in form.fields:
-                del form.fields['usuario']
+        # Se for um produtor comum, tira o campo da tela para ele não alterar
+        if is_produtor(self.request.user):
+            if self.autopopular_produtor and 'produtor' in form.fields:
+                del form.fields['produtor']
         return form
 
     def form_valid(self, form):
-        if self._eh_gerente_puro():
-            user = self.request.user
+        # Se for um produtor comum, injeta o ID dele no objeto salvo
+        if is_produtor(self.request.user):
             obj = form.instance
-            if self.autopopular_filial and not getattr(obj, 'filial_id', None):
-                obj.filial = user.filial
-            if self.autopopular_usuario and not getattr(obj, 'usuario_id', None):
-                obj.usuario = user
+            if self.autopopular_produtor and not getattr(obj, 'produtor_id', None):
+                obj.produtor = self.request.user
+                
         return super().form_valid(form)

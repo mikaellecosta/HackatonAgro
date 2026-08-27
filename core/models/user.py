@@ -1,44 +1,27 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
-    cpf = models.CharField(
-        max_length=11,
-        unique=True,
-        null=True,
-        blank=True,
-        verbose_name='CPF',
+    # O AbstractUser já traz: username, password, email, first_name, last_name, is_active, is_staff, etc.
+    
+    # Adicionando campos extras específicos para o seu negócio
+    telefone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
+    
+    TIPO_PLANO_CHOICES = [
+        ('GRATUITO', 'Gratuito (com Ads)'),
+        ('ASSINATURA', 'Assinatura Premium'),
+        ('PERSONALIZADO', 'Infraestrutura Personalizada'),
+    ]
+    tipo_plano = models.CharField(
+        max_length=15, 
+        choices=TIPO_PLANO_CHOICES, 
+        default='GRATUITO',
+        verbose_name="Tipo de Plano"
     )
 
-    telefone = models.CharField(
-        max_length=20,
-        null=True,
-        blank=True,
-        verbose_name='Telefone',
-    )
-
-    foto_perfil = models.ImageField(
-        upload_to='fotos_perfil/',
-        null=True,
-        blank=True,
-        verbose_name='Foto de perfil',
-    )
-
-    class Meta:
-        verbose_name = 'Usuário'
-        verbose_name_plural = 'Usuários'
+    # Você pode forçar o email a ser único (o padrão do Django não exige isso)
+    email = models.EmailField(unique=True, verbose_name="E-mail")
 
     def __str__(self):
-        return self.get_full_name() or self.username
-
-    @property
-    def filial(self):
-        """
-        Filial gerenciada por este usuário (None se for matriz/sem vínculo).
-
-        Conveniência para o permissionamento: hoje só gerentes têm vínculo
-        com filial via `Filial.gerente`. Se um usuário gerencia mais de uma,
-        retorna a primeira (caso de matriz/multi-unidade fica fora do MVP).
-        """
-        return self.filiais_gerenciadas.first()
+        # Retorna o nome completo se existir, senão retorna o email ou username
+        return self.get_full_name() or self.email or self.username

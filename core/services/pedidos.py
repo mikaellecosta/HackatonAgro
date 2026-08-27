@@ -19,7 +19,7 @@ from core.models import (
     ItemMovimentacao,
     Pedido,
 )
-from core.models.choices import StatusMovimentacao
+from core.models.GestaoFinanceira import StatusMovimentacao
 from core.services.estoque import insumos_em_ruptura
 
 

@@ -11,7 +11,7 @@ from django.db.models import Avg, Count, Sum
 from django.utils import timezone
 
 from core.models import ItemVenda, Venda
-from core.models.choices import StatusMovimentacao
+from core.models.GestaoFinanceira import StatusMovimentacao
 
 
 def _vendas_concluidas(filial=None, dias=30):

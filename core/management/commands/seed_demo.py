@@ -33,7 +33,7 @@ from core.models import (
     User,
     Venda,
 )
-from core.models.choices import (
+from core.models.GestaoFinanceira import (
     Estado,
     RamoAlimenticio,
     StatusMovimentacao,

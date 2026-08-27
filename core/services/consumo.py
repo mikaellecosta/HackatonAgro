@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.utils import timezone
 
 from core.models import ItemMovimentacao
-from core.models.choices import StatusMovimentacao, TipoMovimentacao
+from core.models.GestaoFinanceira import StatusMovimentacao, TipoMovimentacao
 
 
 def _itens_consumo(filial=None, dias=30):

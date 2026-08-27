@@ -46,7 +46,7 @@ from core.models import (
     Pedido,
     User,
 )
-from core.models.choices import StatusMovimentacao
+from core.models.GestaoFinanceira import StatusMovimentacao
 from core.services.pedidos import sugerir_pedido_da_cidade
 from whatsapp import phones
 from whatsapp.services import EvolutionError, enviar_texto

@@ -45,72 +45,63 @@ MIDDLEWARE = [
 ]
 
 UNFOLD = {
-    'SITE_TITLE': 'Tereza IA',
-    'SITE_HEADER': 'Tereza IA',
-    'SIDEBAR': {
-        'show_search': True,
-        'show_all_applications': False,
-        'navigation': [
+    "SITE_TITLE": "Painel AgroTech",
+    "SITE_HEADER": "AgroTech Admin",
+    "SITE_ICON": "agriculture", 
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
             {
-                'title': _('Catálogo'),
-                'separator': True,
-                'items': [
+                "title": "Produção e Campo",
+                "separator": True,
+                "items": [
                     {
-                        'title': _('Insumos'),
-                        'icon': 'kitchen',
-                        'link': reverse_lazy('admin:core_insumo_changelist'),
+                        "title": "Áreas de Plantio",
+                        "icon": "landscape",
+                        "link": reverse_lazy("admin:core_areaplantio_changelist"),
                     },
                     {
-                        'title': _('Fornecedores'),
-                        'icon': 'local_shipping',
-                        'link': reverse_lazy('admin:core_fornecedor_changelist'),
+                        "title": "Monitoramento Climático",
+                        "icon": "cloud",
+                        "link": reverse_lazy("admin:core_monitoramentoclimatico_changelist"),
                     },
                     {
-                        'title': _('Pratos'),
-                        'icon': 'restaurant_menu',
-                        'link': reverse_lazy('admin:core_prato_changelist'),
-                    },
-                    {
-                        'title': _('Filiais'),
-                        'icon': 'store',
-                        'link': reverse_lazy('admin:core_filial_changelist'),
+                        "title": "Análise de Doenças (IA)",
+                        "icon": "pest_control",
+                        "link": reverse_lazy("admin:core_deteccaodoencanutricao_changelist"),
                     },
                 ],
             },
             {
-                'title': _('Operações'),
-                'separator': True,
-                'items': [
+                "title": "Gestão e Recursos",
+                "separator": True,
+                "items": [
                     {
-                        'title': _('Pedidos'),
-                        'icon': 'shopping_cart',
-                        'link': reverse_lazy('admin:core_pedido_changelist'),
+                        "title": "Recursos e Insumos",
+                        "icon": "inventory_2",
+                        "link": reverse_lazy("admin:core_recursoagricola_changelist"),
                     },
                     {
-                        'title': _('Vendas'),
-                        'icon': 'point_of_sale',
-                        'link': reverse_lazy('admin:core_venda_changelist'),
-                    },
-                    {
-                        'title': _('Movimentações'),
-                        'icon': 'swap_horiz',
-                        'link': reverse_lazy('admin:core_movimentacao_changelist'),
+                        "title": "Gestão Financeira",
+                        "icon": "attach_money",
+                        "link": reverse_lazy("admin:core_gestaofinanceira_changelist"),
                     },
                 ],
             },
             {
-                'title': _('Usuários & Permissionamento'),
-                'separator': True,
-                'items': [
+                "title": "Administração",
+                "separator": True,
+                "items": [
                     {
-                        'title': _('Usuários'),
-                        'icon': 'person',
-                        'link': reverse_lazy('admin:core_user_changelist'),
+                        "title": "Produtores (Usuários)",
+                        "icon": "group",
+                        "link": reverse_lazy("admin:core_user_changelist"), 
                     },
                     {
-                        'title': _('Grupos'),
-                        'icon': 'groups',
-                        'link': reverse_lazy('admin:auth_group_changelist'),
+                        "title": "Feedbacks",
+                        "icon": "forum",
+                        "link": reverse_lazy("admin:core_feedback_changelist"),
                     },
                 ],
             },

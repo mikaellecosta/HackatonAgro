@@ -13,7 +13,7 @@ from decimal import Decimal
 from django.db.models import Sum
 
 from core.models import Insumo, ItemMovimentacao
-from core.models.choices import StatusMovimentacao, TipoMovimentacao
+from core.models.GestaoFinanceira import StatusMovimentacao, TipoMovimentacao
 
 
 # Tipos que somam ao estoque vs subtraem.
