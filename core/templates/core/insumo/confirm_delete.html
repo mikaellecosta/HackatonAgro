@@ -2,11 +2,11 @@
 {% block title %}Excluir {{ insumo }}{% endblock %}
 {% block content %}
 <h1>Excluir insumo?</h1>
-<p>Tem certeza que deseja excluir <strong>{{ insumo }}</strong>?</p>
-<p>⚠ Pratos e movimentações que referenciam este insumo serão protegidos pelo banco.</p>
+<p>Tem certeza que deseja excluir <strong>{{ insumo.nome }}</strong>?</p>
+<p>Este insumo sera removido da lista agricola mock.</p>
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn danger">Sim, excluir</button>
-    <a class="btn ghost" href="{% url 'core:insumo_detail' insumo.pk %}">Cancelar</a>
+    <a class="btn ghost" href="{% url 'core:insumo_detail' insumo.id %}">Cancelar</a>
 </form>
 {% endblock %}

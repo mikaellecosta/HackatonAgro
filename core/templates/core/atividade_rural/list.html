@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% block title %}Atividades Rurais{% endblock %}
+{% block content %}
+<h1>Atividades Rurais</h1>
+
+<div class="ts-toolbar">
+    <div class="ts-filter-group">
+        <span class="text-sm text-cowhide-cocoa/70">Gerenciamento de atividades do campo.</span>
+    </div>
+    <div class="ts-toolbar-actions">
+        <a class="btn-primary ts-filter-btn" href="{% url 'core:atividade-rural_create' %}">
+            <i data-lucide="plus" class="ts-icon" aria-hidden="true"></i>
+            Nova atividade
+        </a>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th>Data de início</th>
+            <th>Término</th>
+            <th class="actions">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in atividades %}
+        {% url 'core:atividade-rural_detail' a.id as view_url %}
+        {% url 'core:atividade-rural_update' a.id as edit_url %}
+        {% url 'core:atividade-rural_delete' a.id as delete_url %}
+        <tr>
+            <!-- Exibe o titulo correto ou um fallback se vier em branco -->
+            <td><a href="{{ view_url }}">{{ a.titulo|default:'Sem nome' }}</a></td>
+            <td>{{ a.tipo|default:'—' }}</td>
+            <td><span class="badge">{{ a.status|default:'Em andamento' }}</span></td>
+            <td>{{ a.data_inicio|default:'—' }}</td>
+            <td>{{ a.data_termino|default:'—' }}</td>
+            <td class="actions">
+                {% include 'core/_includes/row_actions.html' with view_url=view_url edit_url=edit_url delete_url=delete_url label=a.titulo %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-cowhide-cocoa/60 py-8">Nenhuma atividade registrada.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

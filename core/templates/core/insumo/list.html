@@ -27,20 +27,20 @@
     <thead>
         <tr>
             <th>Nome</th>
+            <th>Em Estoque</th>
             <th>Unidade</th>
-            <th>Estoque mínimo</th>
             <th class="actions">Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for ins in insumos %}
-        {% url 'core:insumo_detail' ins.pk as view_url %}
-        {% url 'core:insumo_update' ins.pk as edit_url %}
-        {% url 'core:insumo_delete' ins.pk as delete_url %}
+        {% url 'core:insumo_detail' ins.id as view_url %}
+        {% url 'core:insumo_update' ins.id as edit_url %}
+        {% url 'core:insumo_delete' ins.id as delete_url %}
         <tr>
             <td><a href="{{ view_url }}">{{ ins.nome }}</a></td>
-            <td>{{ ins.get_unidade_medida_display }}</td>
-            <td>{{ ins.estoque_minimo }}</td>
+            <td>{{ ins.estoque_atual }}</td>
+            <td>{{ ins.unidade_medida }}</td>
             <td class="actions">
                 {% include 'core/_includes/row_actions.html' with view_url=view_url edit_url=edit_url delete_url=delete_url label=ins.nome %}
             </td>

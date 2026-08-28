@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block title %}Excluir {{ atividade.titulo }}{% endblock %}
+{% block content %}
+<h1>Excluir atividade?</h1>
+<p>Tem certeza que deseja excluir <strong>{{ atividade.titulo }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Sim, excluir</button>
+    <a class="btn ghost" href="{% url 'core:atividade-rural_detail' atividade.id %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ atividade.titulo }}{% endblock %}
+{% block content %}
+<style>
+    .atividade-detail-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+        width: calc(100% + 1rem);
+        margin-left: -1rem;
+    }
+
+    .atividade-detail-title,
+    .atividade-detail-actions {
+        width: calc(100% + 1rem);
+        margin-left: -1rem;
+    }
+
+    .insumo-dialog {
+        width: min(92vw, 30rem);
+        margin: auto;
+        padding: 1.5rem;
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 25%);
+    }
+
+    .insumo-dialog p {
+        margin: 1.25rem 0;
+    }
+
+    .insumo-dialog .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.75rem;
+    }
+
+    .insumo-dialog::backdrop {
+        background: rgb(35 22 15 / 55%);
+    }
+
+    .insumos-title {
+        margin-top: 0;
+    }
+
+    .insumo-add-cell {
+        text-align: center !important;
+    }
+
+    .insumo-add-button {
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+    }
+
+    .insumo-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .insumo-row-actions .btn {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+        .atividade-detail-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<p><a href="{% url 'core:atividade-rural_list' %}">← Atividades Rurais</a></p>
+<h1 class="atividade-detail-title">{{ atividade.titulo }}</h1>
+
+<div class="atividade-detail-layout">
+    <table>
+        <tr><th>ID</th><td>{{ atividade.id }}</td></tr>
+        <tr><th>Tipo</th><td>{{ atividade.tipo }}</td></tr>
+        <tr><th>Status</th><td>{{ atividade.status }}</td></tr>
+        <tr><th>Data de início</th><td>{{ atividade.data_inicio|default:'—' }}</td></tr>
+        <tr><th>Data de Término</th><td>{{ atividade.data_termino|default:'—' }}</td></tr>
+        <tr>
+            <th>Localização</th>
+            <td>
+                {% if atividade.latitude and atividade.longitude %}
+                    {{ atividade.latitude }}, {{ atividade.longitude }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <section>
+        <div>
+            <h2 class="insumos-title">Insumos utilizados</h2>
+        </div>
+        <table>
+            <thead><tr><th>Insumo</th><th>Quantidade</th><th>Unidade</th><th>Adicionado em</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for item in insumos_utilizados %}
+                <tr>
+                    <td>{{ item.insumo.nome }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.insumo.unidade_medida }}</td>
+                    <td>{{ item.data_adicionado }}</td>
+                    <td class="actions">
+                        <div class="insumo-row-actions">
+                            <button type="button" class="btn" onclick="document.getElementById('editar-insumo-{{ item.id }}').showModal()" aria-label="Editar {{ item.insumo.nome }}">Editar</button>
+                            <form method="post" action="{% url 'core:atividade-rural_insumo_delete' atividade.id item.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn danger" aria-label="Remover {{ item.insumo.nome }}">Excluir</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">Nenhum insumo utilizado.</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" class="insumo-add-cell">
+                        <button type="button" class="btn insumo-add-button" onclick="document.getElementById('insumo-dialog').showModal()" aria-label="Adicionar insumo">
+                            <i data-lucide="plus" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        {% for item in insumos_utilizados %}
+        <dialog id="editar-insumo-{{ item.id }}" class="insumo-dialog">
+            <form method="post" action="{% url 'core:atividade-rural_insumo_update' atividade.id item.id %}">
+                {% csrf_token %}
+                <h2>Editar insumo utilizado</h2>
+                <p><strong>Insumo:</strong> {{ item.insumo.nome }}</p>
+                <p><strong>Adicionado em:</strong> {{ item.data_adicionado }}</p>
+                <p>
+                    <label for="quantidade-{{ item.id }}">Quantidade utilizada</label>
+                    <input id="quantidade-{{ item.id }}" name="quantidade" type="number" min="0.001" step="0.001" value="{{ item.quantidade }}" required>
+                </p>
+                <div class="actions">
+                    <button type="button" class="btn ghost" onclick="document.getElementById('editar-insumo-{{ item.id }}').close()">Cancelar</button>
+                    <button type="submit" class="btn">Salvar</button>
+                </div>
+            </form>
+        </dialog>
+        {% endfor %}
+    </section>
+</div>
+
+<p class="actions atividade-detail-actions">
+    <a class="btn" href="{% url 'core:atividade-rural_update' atividade.id %}">Editar</a>
+    <a class="btn danger" href="{% url 'core:atividade-rural_delete' atividade.id %}">Excluir</a>
+    <a class="btn" href="{% url 'core:atividade-rural_complete' atividade.id %}">Concluir</a>
+</p>
+
+<dialog id="insumo-dialog" class="insumo-dialog">
+    <form method="post" action="{% url 'core:atividade-rural_insumo_create' atividade.id %}">
+        {% csrf_token %}
+        <h2>Adicionar insumo utilizado</h2>
+        <p>
+            <label for="insumo_id">Insumo</label>
+            <select id="insumo_id" name="insumo_id" required>
+                <option value="">Selecione um insumo</option>
+                {% for insumo in insumos_disponiveis %}
+                <option value="{{ insumo.id }}" {% if insumo.estoque_atual <= 0 %}disabled{% endif %}>
+                    {{ insumo.nome }} ({{ insumo.estoque_atual }} {{ insumo.unidade_medida }} disponíveis)
+                </option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="quantidade">Quantidade utilizada</label>
+            <input id="quantidade" name="quantidade" type="number" min="0.001" step="0.001" required>
+        </p>
+        <div class="actions">
+            <button type="button" class="btn ghost" onclick="document.getElementById('insumo-dialog').close()">Cancelar</button>
+            <button type="submit" class="btn">Adicionar</button>
+        </div>
+    </form>
+</dialog>
+{% endblock %}

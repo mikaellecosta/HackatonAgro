@@ -14,22 +14,32 @@
 @source "../../../core/**/*.{html,py}";
 @source "../../templates/**/*.html";
 
+:root {
+  --agro-primary: #21400B;
+  --agro-secondary: #3F592D;
+  --agro-muted: #798C6C;
+  --agro-accent: #1D400A;
+  --agro-white: #FFFFFF;
+  --agro-surface: #F4F7F1;
+  --agro-line: #DCE5D7;
+}
+
 /* -----------------------------------------------------------------------------
    Tokens — paleta nordestina + semântica
    ----------------------------------------------------------------------------- */
 @theme {
   /* Paleta */
-  --color-deep-red:        #750A0A;  /* Primary  — vermelho profundo */
-  --color-russet-oak:      #923C27;  /* Secondary — terracota/ferrugem */
-  --color-toasted-caramel: #84592B;  /* Muted   — caramelo torrado */
-  --color-spiced-wine:     #743014;  /* Accent  — vinho especiado */
-  --color-crimson-red:     #632223;  /* Danger  — vermelho carmesim */
-  --color-golden-batter:   #E8D1A7;  /* Background — dourado/bege */
-  --color-cowhide-cocoa:   #442D1C;  /* Foreground — marrom couro */
+  --color-deep-red:        var(--agro-primary);
+  --color-russet-oak:      var(--agro-secondary);
+  --color-toasted-caramel: var(--agro-muted);
+  --color-spiced-wine:     var(--agro-accent);
+  --color-crimson-red:     var(--agro-accent);
+  --color-golden-batter:   var(--agro-surface);
+  --color-cowhide-cocoa:   var(--agro-primary);
 
   /* Hover variants */
-  --color-deep-red-hover:    #8A0B0B;
-  --color-russet-oak-hover:  #A04530;
+  --color-deep-red-hover:    var(--agro-accent);
+  --color-russet-oak-hover:  var(--agro-primary);
 
   /* Tipografia */
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
@@ -181,7 +191,7 @@
 
 /* Hero gradient — usar em <section class="ts-section ts-hero-gradient"> */
 @utility ts-hero-gradient {
-  background: linear-gradient(135deg, #923C27 0%, #E8D1A7 50%, #743014 100%);
+  background: linear-gradient(135deg, var(--agro-secondary) 0%, var(--agro-muted) 50%, var(--agro-primary) 100%);
 }
 
 /* Header / nav (usado pelo base.html) ----------------------------------------- */

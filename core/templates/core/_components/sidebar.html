@@ -20,15 +20,45 @@
 
     <nav class="ts-sidebar-nav" aria-label="Navegação principal">
 
-        {# ----- Catálogo ----- #}
         <div class="ts-side-section">
-            <h3 class="ts-side-section-title">Catálogo</h3>
+            <a href="{% url 'core:painel' %}"
+               class="ts-side-link {% active_link 'painel' %}"
+               title="Dashboard">
+                <i data-lucide="layout-dashboard" class="ts-side-icon" aria-hidden="true"></i>
+                <span class="ts-side-label">Dashboard</span>
+            </a>
+        </div>
+
+        {# ----- Gestão agrícola ----- #}
+        <div class="ts-side-section">
+            <h3 class="ts-side-section-title">Gestão agrícola</h3>
 
             <a href="{% url 'core:insumo_list' %}"
                class="ts-side-link {% active_link 'insumo_' %}"
                title="Insumos">
                 <i data-lucide="wheat" class="ts-side-icon" aria-hidden="true"></i>
                 <span class="ts-side-label">Insumos</span>
+            </a>
+
+            <a href="{% url 'core:atividade-rural_list' %}"
+               class="ts-side-link {% active_link 'atividade-rural_' %}"
+               title="Atividades rurais">
+                <i data-lucide="sprout" class="ts-side-icon" aria-hidden="true"></i>
+                <span class="ts-side-label">Atividades rurais</span>
+            </a>
+
+            <a href="{% url 'core:sensoriamento' %}"
+               class="ts-side-link {% active_link 'sensoriamento' %}"
+               title="Sensoriamento">
+                <i data-lucide="radio-tower" class="ts-side-icon" aria-hidden="true"></i>
+                <span class="ts-side-label">Sensoriamento</span>
+            </a>
+
+            <a href="{% url 'core:diagnosticos' %}"
+               class="ts-side-link {% active_link 'diagnosticos' %}"
+               title="Diagnóstico por imagem">
+                <i data-lucide="scan-search" class="ts-side-icon" aria-hidden="true"></i>
+                <span class="ts-side-label">Diagnóstico por imagem</span>
             </a>
 
             <a href="{% url 'core:fornecedor_list' %}"
