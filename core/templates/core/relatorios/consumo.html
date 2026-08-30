@@ -1,36 +1,99 @@
 {% extends 'core/base.html' %}
-{% block title %}Padrões de consumo{% endblock %}
+{% block title %}Consumo da produção{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+    .farm-consumption { --ink:#243c34; --muted:#708178; --line:#dce8df; --green:#2f8768; --mint:#8fc7a8; --gold:#e5b85c; --clay:#d47750; color:var(--ink); }
+    .farm-consumption__heading { display:flex; align-items:end; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
+    .farm-consumption__heading h1 { margin:0; color:var(--ink); font-size:clamp(1.8rem,4vw,2.65rem); }
+    .farm-consumption__heading p { margin:.35rem 0 0; color:var(--muted); }
+    .farm-consumption__period { display:flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.85rem; white-space:nowrap; }
+    .farm-consumption__period input { width:4.5rem; padding:.5rem; border:1px solid var(--line); border-radius:.4rem; }
+    .farm-consumption__period button { padding:.5rem .75rem; border:0; border-radius:.4rem; color:#fff; background:var(--green); cursor:pointer; }
+    .farm-consumption__kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+    .farm-consumption__kpi, .farm-consumption__panel { border:1px solid var(--line); border-radius:.7rem; background:#fffdf8; box-shadow:0 .7rem 1.8rem rgb(36 70 55 / 8%); }
+    .farm-consumption__kpi { padding:1rem 1.1rem; }
+    .farm-consumption__kpi small { color:var(--muted); font-size:.75rem; }
+    .farm-consumption__kpi strong { display:block; margin:.35rem 0 .25rem; color:var(--ink); font-size:1.45rem; }
+    .farm-consumption__kpi span { color:var(--green); font-size:.75rem; font-weight:700; }
+    .farm-consumption__grid { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(16rem,.8fr); gap:1rem; }
+    .farm-consumption__panel { min-width:0; padding:1.25rem; }
+    .farm-consumption__panel--wide { grid-row:span 2; }
+    .farm-consumption__panel-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .farm-consumption__panel-heading h2 { margin:0; color:var(--ink); font-size:1.05rem; }
+    .farm-consumption__panel-heading p { margin:.25rem 0 0; color:var(--muted); font-size:.78rem; }
+    .farm-consumption__chart { position:relative; height:17rem; }
+    .farm-consumption__chart--donut { height:13rem; }
+    .farm-consumption__legend { display:grid; gap:.55rem; margin-top:.75rem; }
+    .farm-consumption__legend-row { display:flex; align-items:center; justify-content:space-between; gap:.75rem; color:var(--muted); font-size:.8rem; }
+    .farm-consumption__legend-label { display:flex; align-items:center; gap:.45rem; }
+    .farm-consumption__dot { width:.6rem; height:.6rem; border-radius:50%; }
+    .farm-consumption__table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .farm-consumption__table th, .farm-consumption__table td { padding:.7rem .25rem; border-bottom:1px solid #edf2ed; text-align:left; }
+    .farm-consumption__table th { color:var(--muted); font-size:.7rem; text-transform:uppercase; }
+    .farm-consumption__table td:last-child, .farm-consumption__table th:last-child { text-align:right; }
+    .farm-consumption__badge { display:inline-block; margin-top:.25rem; padding:.18rem .4rem; border-radius:99px; color:#28725a; background:#ddf2e4; font-size:.68rem; }
+    @media (max-width:850px) { .farm-consumption__kpis { grid-template-columns:repeat(2,1fr); } .farm-consumption__grid { grid-template-columns:1fr; } .farm-consumption__panel--wide { grid-row:auto; } }
+    @media (max-width:560px) { .farm-consumption__heading { display:block; } .farm-consumption__period { margin-top:1rem; } .farm-consumption__kpis { gap:.65rem; } .farm-consumption__kpi { padding:.8rem; } .farm-consumption__kpi strong { font-size:1.15rem; } }
+</style>
+{% endblock %}
 {% block content %}
-<h1>Padrões de consumo{% if filial %} — {{ filial }}{% endif %}</h1>
-<p style="color:#666">Considera apenas movimentações de saída/desperdício <strong>concluídas</strong>
-   nos últimos {{ dias }} dia(s).</p>
-{% include 'core/_includes/filtro_relatorio.html' %}
+<main class="farm-consumption">
+    <header class="farm-consumption__heading">
+        <div><h1>Consumo da produção</h1><p>Uso de insumos no ciclo agrícola e eficiência operacional</p></div>
+        <form class="farm-consumption__period" method="get">
+            <label for="consumption-days">Período</label>
+            <input id="consumption-days" type="number" name="dias" min="1" max="365" value="{{ dias }}">
+            <span>dias</span>
+            <button type="submit">Atualizar</button>
+        </form>
+    </header>
 
-<h2>Top 10 insumos consumidos</h2>
-<table>
-    <thead><tr><th>#</th><th>Insumo</th><th>Total consumido</th></tr></thead>
-    <tbody>
-        {% for c in top_insumos %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ c.insumo__nome }}</td>
-            <td>{{ c.total }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3">Sem consumo no período.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <section class="farm-consumption__kpis" aria-label="Indicadores de consumo agrícola">
+        <article class="farm-consumption__kpi"><small>Consumo total</small><strong>12,4 t</strong><span>8,7% abaixo do planejado</span></article>
+        <article class="farm-consumption__kpi"><small>Média diária</small><strong>413 kg</strong><span>Ritmo estável no ciclo</span></article>
+        <article class="farm-consumption__kpi"><small>Eficiência de aplicação</small><strong>91%</strong><span>+5,3% contra o ciclo anterior</span></article>
+        <article class="farm-consumption__kpi"><small>Custo dos insumos</small><strong>R$ 18.420</strong><span>R$ 1,48 por kg aplicado</span></article>
+    </section>
 
-<h2>Consumo completo</h2>
-<table>
-    <thead><tr><th>Insumo</th><th>Total</th></tr></thead>
-    <tbody>
-        {% for c in consumo %}
-        <tr><td>{{ c.insumo__nome }}</td><td>{{ c.total }}</td></tr>
-        {% empty %}
-        <tr><td colspan="2">—</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="farm-consumption__grid">
+        <section class="farm-consumption__panel farm-consumption__panel--wide" aria-labelledby="consumption-evolution-title">
+            <div class="farm-consumption__panel-heading"><div><h2 id="consumption-evolution-title">Evolução do consumo</h2><p>Quantidade de insumos aplicada por semana</p></div></div>
+            <div class="farm-consumption__chart"><canvas id="consumption-evolution" aria-label="Gráfico da evolução semanal do consumo agrícola"></canvas></div>
+        </section>
+        <section class="farm-consumption__panel" aria-labelledby="input-share-title">
+            <div class="farm-consumption__panel-heading"><div><h2 id="input-share-title">Consumo por categoria</h2><p>Participação no uso total</p></div></div>
+            <div class="farm-consumption__chart farm-consumption__chart--donut"><canvas id="input-share" aria-label="Gráfico do consumo por categoria de insumo"></canvas></div>
+            <div class="farm-consumption__legend">
+                <div class="farm-consumption__legend-row"><span class="farm-consumption__legend-label"><i class="farm-consumption__dot" style="background:#2f8768"></i>Sementes</span><strong>38%</strong></div>
+                <div class="farm-consumption__legend-row"><span class="farm-consumption__legend-label"><i class="farm-consumption__dot" style="background:#e5b85c"></i>Fertilizantes</span><strong>35%</strong></div>
+                <div class="farm-consumption__legend-row"><span class="farm-consumption__legend-label"><i class="farm-consumption__dot" style="background:#d47750"></i>Defensivos</span><strong>27%</strong></div>
+            </div>
+        </section>
+        <section class="farm-consumption__panel" aria-labelledby="inputs-title">
+            <div class="farm-consumption__panel-heading"><div><h2 id="inputs-title">Insumos mais utilizados</h2><p>Consumo acumulado no período</p></div></div>
+            <table class="farm-consumption__table"><thead><tr><th>Insumo</th><th>Uso</th><th>Saldo</th></tr></thead><tbody>
+                <tr><td>Semente de milho híbrido</td><td>4,7 t</td><td><span class="farm-consumption__badge">240 kg</span></td></tr>
+                <tr><td>Fertilizante NPK 10-10-10</td><td>4,3 t</td><td><span class="farm-consumption__badge">65 kg</span></td></tr>
+                <tr><td>Defensivo agrícola</td><td>3,4 t</td><td><span class="farm-consumption__badge">32 L</span></td></tr>
+            </tbody></table>
+        </section>
+    </div>
+</main>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    const consumptionFont = { family: 'DM Sans, sans-serif', size: 11 };
+    const consumptionInk = '#243c34';
+    new Chart(document.getElementById('consumption-evolution'), {
+        type: 'bar',
+        data: { labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'], datasets: [{ label: 'Sementes (t)', data: [1.1, 1.3, .9, .8, .5, .1], backgroundColor: '#2f8768', borderRadius: 4 }, { label: 'Fertilizantes (t)', data: [.9, .8, .75, .7, .65, .5], backgroundColor: '#e5b85c', borderRadius: 4 }, { label: 'Defensivos (t)', data: [.55, .6, .5, .55, .65, .55], backgroundColor: '#d47750', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: consumptionInk, font: consumptionFont } }, tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw.toLocaleString('pt-BR')} t` } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { color: '#708178' } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e8efe9' }, ticks: { color: '#708178', callback: (value) => `${value} t` } } } }
+    });
+    new Chart(document.getElementById('input-share'), {
+        type: 'doughnut',
+        data: { labels: ['Sementes', 'Fertilizantes', 'Defensivos'], datasets: [{ data: [38, 35, 27], backgroundColor: ['#2f8768', '#e5b85c', '#d47750'], borderWidth: 0, hoverOffset: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '67%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } } } }
+    });
+</script>
 {% endblock %}

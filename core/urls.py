@@ -105,6 +105,8 @@ urlpatterns += [
 
 urlpatterns += [
     path('sensoriamento/', views.SensoriamentoView.as_view(), name='sensoriamento'),
+    path('perfil/', views.PerfilView.as_view(), name='perfil'),
+    path('configuracoes/', views.ConfiguracoesView.as_view(), name='configuracoes'),
 ]
 
 

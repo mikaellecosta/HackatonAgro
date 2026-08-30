@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from core.models import Venda, Prato
 from core.permissions import is_gerente_filial, is_matriz
 from core.services import faturamento_no_periodo, ticket_medio
-  
+
 
 class PainelView(LoginRequiredMixin, TemplateView):
       template_name = 'components/dashboard.html'

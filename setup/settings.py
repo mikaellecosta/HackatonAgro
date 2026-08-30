@@ -45,8 +45,8 @@ MIDDLEWARE = [
 ]
 
 UNFOLD = {
-    'SITE_TITLE': 'Tereza IA',
-    'SITE_HEADER': 'Tereza IA',
+    'SITE_TITLE': 'Colheita de Dados',
+    'SITE_HEADER': 'Colheita de Dados',
     'SIDEBAR': {
         'show_search': True,
         'show_all_applications': False,

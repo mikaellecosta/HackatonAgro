@@ -1,19 +1,17 @@
-{% load nav_tags %}
+{% load static nav_tags %}
 {% comment %}
-    Sidebar — Grupo Tereza.
+    Sidebar — Colheita de Dados.
     Estado:
       - <html class="sidebar-collapsed">  → recolhida (só ícones)
       - <html class="sidebar-mobile-open"> → drawer aberto no mobile
-    Persistência: localStorage 'tereza:sidebar-collapsed' (gerenciado por sidebar.js).
+    Persistência: localStorage 'colheita:sidebar-collapsed' (gerenciado por sidebar.js).
 {% endcomment %}
 <aside id="ts-sidebar" class="ts-sidebar" aria-label="Menu lateral">
 
     <div class="ts-sidebar-header">
-        <a href="{% url 'core:home' %}" class="ts-sidebar-brand" title="Grupo Tereza Gastronomia">
-            <i data-lucide="utensils-crossed" class="ts-sidebar-brand-icon" aria-hidden="true"></i>
-            <span class="ts-side-label ts-sidebar-brand-text">
-                Grupo Tereza
-                <small class="block text-xs font-normal text-golden-batter/70">Gastronomia</small>
+        <a href="{% url 'core:home' %}" class="ts-sidebar-brand" title="Colheita de Dados">
+            <span class="ts-sidebar-brand-logo">
+                <img src="{% static 'img/logo.png' %}" alt="Colheita de Dados">
             </span>
         </a>
     </div>
@@ -35,9 +33,9 @@
 
             <a href="{% url 'core:insumo_list' %}"
                class="ts-side-link {% active_link 'insumo_' %}"
-               title="Insumos">
+               title="Estoque de Insumos">
                 <i data-lucide="wheat" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Insumos</span>
+                <span class="ts-side-label">Estoque de Insumos</span>
             </a>
 
             <a href="{% url 'core:atividade-rural_list' %}"
@@ -52,6 +50,7 @@
                title="Sensoriamento">
                 <i data-lucide="radio-tower" class="ts-side-icon" aria-hidden="true"></i>
                 <span class="ts-side-label">Sensoriamento</span>
+                <i data-lucide="star" class="ts-premium-icon" aria-label="Recurso premium"></i>
             </a>
 
             <a href="{% url 'core:diagnosticos' %}"
@@ -59,28 +58,9 @@
                title="Diagnóstico por imagem">
                 <i data-lucide="scan-search" class="ts-side-icon" aria-hidden="true"></i>
                 <span class="ts-side-label">Diagnóstico por imagem</span>
+                <i data-lucide="star" class="ts-premium-icon" aria-label="Recurso premium"></i>
             </a>
 
-            <a href="{% url 'core:fornecedor_list' %}"
-               class="ts-side-link {% active_link 'fornecedor_' %}"
-               title="Fornecedores">
-                <i data-lucide="truck" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Fornecedores</span>
-            </a>
-
-            <a href="{% url 'core:prato_list' %}"
-               class="ts-side-link {% active_link 'prato_' %}"
-               title="Pratos">
-                <i data-lucide="chef-hat" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Pratos</span>
-            </a>
-
-            <a href="{% url 'core:filial_list' %}"
-               class="ts-side-link {% active_link 'filial_' %}"
-               title="Filiais">
-                <i data-lucide="store" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Filiais</span>
-            </a>
         </div>
 
         {# ----- Operações ----- #}
@@ -108,24 +88,11 @@
                 <span class="ts-side-label">Movimentações</span>
             </a>
 
-            <a href="{% url 'core:sugestao_pedido' %}"
-               class="ts-side-link {% active_link 'sugestao_' %}"
-               title="Sugestão de pedido">
-                <i data-lucide="lightbulb" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Sugestão de pedido</span>
-            </a>
         </div>
 
         {# ----- Relatórios ----- #}
         <div class="ts-side-section">
             <h3 class="ts-side-section-title">Relatórios</h3>
-
-            <a href="{% url 'core:relatorio_estoque' %}"
-               class="ts-side-link {% active_link 'relatorio_estoque' 'relatorio_ruptura' %}"
-               title="Estoque">
-                <i data-lucide="package" class="ts-side-icon" aria-hidden="true"></i>
-                <span class="ts-side-label">Estoque</span>
-            </a>
 
             <a href="{% url 'core:relatorio_consumo' %}"
                class="ts-side-link {% active_link 'relatorio_consumo' %}"
@@ -143,6 +110,21 @@
         </div>
 
     </nav>
+
+    <div class="ts-sidebar-account">
+        <a href="{% url 'core:perfil' %}"
+           class="ts-side-link {% active_link 'perfil' %}"
+           title="Perfil">
+            <i data-lucide="user-round" class="ts-side-icon" aria-hidden="true"></i>
+            <span class="ts-side-label">Perfil</span>
+        </a>
+        <a href="{% url 'core:configuracoes' %}"
+           class="ts-side-link {% active_link 'configuracoes' %}"
+           title="Configurações">
+            <i data-lucide="settings" class="ts-side-icon" aria-hidden="true"></i>
+            <span class="ts-side-label">Configurações</span>
+        </a>
+    </div>
 
     {# Botão de recolher — só aparece em viewport >= md #}
     <button type="button"

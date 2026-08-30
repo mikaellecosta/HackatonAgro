@@ -29,6 +29,7 @@
         <tr>
             <th>Data</th>
             <th>Status</th>
+            <th>Itens vendidos</th>
             <th>Preço</th>
             <th>Filial</th>
             <th>Usuário</th>
@@ -43,6 +44,13 @@
         <tr>
             <td><a href="{{ view_url }}">{{ v.data|date:'d/m/Y H:i' }}</a></td>
             <td><span class="badge {{ v.status }}">{{ v.get_status_display }}</span></td>
+            <td>
+                {% for item in v.itens_venda.all %}
+                    {{ item.quantidade }}x {{ item.prato.nome }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    —
+                {% endfor %}
+            </td>
             <td>R$ {{ v.preco }}</td>
             <td>{{ v.filial }}</td>
             <td>{{ v.usuario }}</td>
@@ -51,7 +59,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="text-center text-cowhide-cocoa/60 py-8">Nenhuma venda encontrada.</td></tr>
+        <tr><td colspan="7" class="text-center text-cowhide-cocoa/60 py-8">Nenhuma venda encontrada.</td></tr>
         {% endfor %}
     </tbody>
 </table>

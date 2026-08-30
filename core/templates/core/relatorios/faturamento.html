@@ -1,50 +1,100 @@
 {% extends 'core/base.html' %}
-{% block title %}Faturamento{% endblock %}
+{% block title %}Faturamento da produção{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+    .farm-revenue { --ink:#243c34; --muted:#708178; --line:#dce8df; --green:#2f8768; --mint:#8fc7a8; --gold:#e5b85c; --clay:#d47750; color:var(--ink); }
+    .farm-revenue__heading { display:flex; align-items:end; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
+    .farm-revenue__heading h1 { margin:0; color:var(--ink); font-size:clamp(1.8rem,4vw,2.65rem); }
+    .farm-revenue__heading p { margin:.35rem 0 0; color:var(--muted); }
+    .farm-revenue__period { display:flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.85rem; white-space:nowrap; }
+    .farm-revenue__period input { width:4.5rem; padding:.5rem; border:1px solid var(--line); border-radius:.4rem; }
+    .farm-revenue__period button { padding:.5rem .75rem; border:0; border-radius:.4rem; color:#fff; background:var(--green); cursor:pointer; }
+    .farm-revenue__kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+    .farm-revenue__kpi, .farm-revenue__panel { border:1px solid var(--line); border-radius:.7rem; background:#fffdf8; box-shadow:0 .7rem 1.8rem rgb(36 70 55 / 8%); }
+    .farm-revenue__kpi { padding:1rem 1.1rem; }
+    .farm-revenue__kpi small { color:var(--muted); font-size:.75rem; }
+    .farm-revenue__kpi strong { display:block; margin:.35rem 0 .25rem; color:var(--ink); font-size:1.45rem; }
+    .farm-revenue__kpi span { color:var(--green); font-size:.75rem; font-weight:700; }
+    .farm-revenue__grid { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(16rem,.8fr); gap:1rem; }
+    .farm-revenue__panel { min-width:0; padding:1.25rem; }
+    .farm-revenue__panel--wide { grid-row:span 2; }
+    .farm-revenue__panel-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .farm-revenue__panel-heading h2 { margin:0; color:var(--ink); font-size:1.05rem; }
+    .farm-revenue__panel-heading p { margin:.25rem 0 0; color:var(--muted); font-size:.78rem; }
+    .farm-revenue__chart { position:relative; height:17rem; }
+    .farm-revenue__chart--donut { height:13rem; }
+    .farm-revenue__legend { display:grid; gap:.55rem; margin-top:.75rem; }
+    .farm-revenue__legend-row { display:flex; align-items:center; justify-content:space-between; gap:.75rem; color:var(--muted); font-size:.8rem; }
+    .farm-revenue__legend-label { display:flex; align-items:center; gap:.45rem; }
+    .farm-revenue__dot { width:.6rem; height:.6rem; border-radius:50%; }
+    .farm-revenue__table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .farm-revenue__table th, .farm-revenue__table td { padding:.7rem .25rem; border-bottom:1px solid #edf2ed; text-align:left; }
+    .farm-revenue__table th { color:var(--muted); font-size:.7rem; text-transform:uppercase; }
+    .farm-revenue__table td:last-child, .farm-revenue__table th:last-child { text-align:right; }
+    .farm-revenue__bar { height:.4rem; margin-top:.35rem; border-radius:99px; background:#e8f0e9; }
+    .farm-revenue__bar span { display:block; height:100%; border-radius:inherit; background:var(--green); }
+    @media (max-width:850px) { .farm-revenue__kpis { grid-template-columns:repeat(2,1fr); } .farm-revenue__grid { grid-template-columns:1fr; } .farm-revenue__panel--wide { grid-row:auto; } }
+    @media (max-width:560px) { .farm-revenue__heading { display:block; } .farm-revenue__period { margin-top:1rem; } .farm-revenue__kpis { gap:.65rem; } .farm-revenue__kpi { padding:.8rem; } .farm-revenue__kpi strong { font-size:1.15rem; } }
+</style>
+{% endblock %}
 {% block content %}
-<h1>Faturamento{% if filial %} — {{ filial }}{% endif %}</h1>
-<p style="color:#666">Apenas vendas <strong>concluídas</strong> nos últimos {{ dias }} dia(s).</p>
-{% include 'core/_includes/filtro_relatorio.html' %}
+<main class="farm-revenue">
+    <header class="farm-revenue__heading">
+        <div><h1>Faturamento da produção</h1><p>Visão comercial das culturas colhidas e entregues</p></div>
+        <form class="farm-revenue__period" method="get">
+            <label for="revenue-days">Período</label>
+            <input id="revenue-days" type="number" name="dias" min="1" max="365" value="{{ dias }}">
+            <span>dias</span>
+            <button type="submit">Atualizar</button>
+        </form>
+    </header>
 
-<div class="cards">
-    <div class="card">
-        <div class="num">R$ {{ faturamento_total|floatformat:2 }}</div>
-        <div>Faturamento total</div>
+    <section class="farm-revenue__kpis" aria-label="Indicadores da produção agrícola">
+        <article class="farm-revenue__kpi"><small>Receita bruta</small><strong>R$ 48.760</strong><span>+14,8% no período</span></article>
+        <article class="farm-revenue__kpi"><small>Produção comercializada</small><strong>18,6 t</strong><span>+9,2% contra o ciclo anterior</span></article>
+        <article class="farm-revenue__kpi"><small>Preço médio por kg</small><strong>R$ 2,62</strong><span>+4,6% valorização</span></article>
+        <article class="farm-revenue__kpi"><small>Margem estimada</small><strong>31,4%</strong><span>R$ 15.306 de resultado</span></article>
+    </section>
+
+    <div class="farm-revenue__grid">
+        <section class="farm-revenue__panel farm-revenue__panel--wide" aria-labelledby="revenue-evolution-title">
+            <div class="farm-revenue__panel-heading"><div><h2 id="revenue-evolution-title">Evolução do faturamento</h2><p>Receita mensal das safras comercializadas</p></div></div>
+            <div class="farm-revenue__chart"><canvas id="revenue-evolution" aria-label="Gráfico da evolução mensal do faturamento agrícola"></canvas></div>
+        </section>
+        <section class="farm-revenue__panel" aria-labelledby="culture-share-title">
+            <div class="farm-revenue__panel-heading"><div><h2 id="culture-share-title">Receita por cultura</h2><p>Participação no faturamento</p></div></div>
+            <div class="farm-revenue__chart farm-revenue__chart--donut"><canvas id="culture-share" aria-label="Gráfico da receita por cultura"></canvas></div>
+            <div class="farm-revenue__legend">
+                <div class="farm-revenue__legend-row"><span class="farm-revenue__legend-label"><i class="farm-revenue__dot" style="background:#2f8768"></i>Milho</span><strong>42%</strong></div>
+                <div class="farm-revenue__legend-row"><span class="farm-revenue__legend-label"><i class="farm-revenue__dot" style="background:#e5b85c"></i>Soja</span><strong>33%</strong></div>
+                <div class="farm-revenue__legend-row"><span class="farm-revenue__legend-label"><i class="farm-revenue__dot" style="background:#d47750"></i>Tomate</span><strong>25%</strong></div>
+            </div>
+        </section>
+        <section class="farm-revenue__panel" aria-labelledby="production-title">
+            <div class="farm-revenue__panel-heading"><div><h2 id="production-title">Produção faturada</h2><p>Volume e receita por cultura</p></div></div>
+            <table class="farm-revenue__table"><thead><tr><th>Cultura</th><th>Volume</th><th>Receita</th></tr></thead><tbody>
+                <tr><td>Milho<div class="farm-revenue__bar"><span style="width:84%"></span></div></td><td>8,4 t</td><td>R$ 20,5 mil</td></tr>
+                <tr><td>Soja<div class="farm-revenue__bar"><span style="width:66%"></span></div></td><td>6,1 t</td><td>R$ 16,1 mil</td></tr>
+                <tr><td>Tomate<div class="farm-revenue__bar"><span style="width:48%"></span></div></td><td>4,1 t</td><td>R$ 12,2 mil</td></tr>
+            </tbody></table>
+        </section>
     </div>
-    <div class="card">
-        <div class="num">R$ {{ ticket_medio|floatformat:2 }}</div>
-        <div>Ticket médio</div>
-    </div>
-</div>
-
-{% if faturamento_por_filial %}
-<h2>Comparativo entre filiais</h2>
-<table>
-    <thead><tr><th>Filial</th><th>Vendas</th><th>Faturamento</th></tr></thead>
-    <tbody>
-        {% for row in faturamento_por_filial %}
-        <tr>
-            <td>{{ row.filial__nome }}</td>
-            <td>{{ row.qtd_vendas }}</td>
-            <td>R$ {{ row.total|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endif %}
-
-<h2>Top pratos vendidos</h2>
-<table>
-    <thead><tr><th>#</th><th>Prato</th><th>Quantidade</th></tr></thead>
-    <tbody>
-        {% for p in top_pratos %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ p.prato__nome }}</td>
-            <td>{{ p.total }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3">Sem vendas no período.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+</main>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    const chartFont = { family: 'DM Sans, sans-serif', size: 11 };
+    const chartInk = '#243c34';
+    new Chart(document.getElementById('revenue-evolution'), {
+        type: 'line',
+        data: { labels: ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'], datasets: [{ label: 'Receita (R$ mil)', data: [31, 35, 34, 39, 42, 48.76], borderColor: '#2f8768', backgroundColor: 'rgba(47, 135, 104, .13)', fill: true, tension: .35, pointRadius: 4, pointBackgroundColor: '#2f8768' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: chartInk, font: chartFont } }, tooltip: { callbacks: { label: (context) => `R$ ${context.raw.toLocaleString('pt-BR')} mil` } } }, scales: { y: { beginAtZero: true, grid: { color: '#e8efe9' }, ticks: { color: '#708178', callback: (value) => `R$ ${value} mil` } }, x: { grid: { display: false }, ticks: { color: '#708178' } } } }
+    });
+    new Chart(document.getElementById('culture-share'), {
+        type: 'doughnut',
+        data: { labels: ['Milho', 'Soja', 'Tomate'], datasets: [{ data: [42, 33, 25], backgroundColor: ['#2f8768', '#e5b85c', '#d47750'], borderWidth: 0, hoverOffset: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '67%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } } } }
+    });
+</script>
 {% endblock %}

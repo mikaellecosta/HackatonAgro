@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block title %}Configurações{% endblock %}
+{% block content %}
+<section class="ts-card max-w-2xl">
+    <p class="text-sm text-cowhide-cocoa/60">Preferências da aplicação</p>
+    <h1 class="mt-1">Configurações</h1>
+    <div class="mt-6 space-y-4">
+        <label class="flex items-center justify-between gap-4 border-b border-golden-batter pb-4">
+            <span><strong class="block">Alertas de estoque</strong><small class="text-cowhide-cocoa/60">Receber avisos quando um insumo atingir o mínimo.</small></span>
+            <input type="checkbox" checked aria-label="Alertas de estoque ativos">
+        </label>
+        <label class="flex items-center justify-between gap-4 border-b border-golden-batter pb-4">
+            <span><strong class="block">Atualização automática</strong><small class="text-cowhide-cocoa/60">Atualizar os indicadores ao abrir o painel.</small></span>
+            <input type="checkbox" checked aria-label="Atualização automática ativa">
+        </label>
+        <label class="flex items-center justify-between gap-4">
+            <span><strong class="block">Resumo de produção</strong><small class="text-cowhide-cocoa/60">Exibir dados agrícolas nos relatórios.</small></span>
+            <input type="checkbox" checked aria-label="Resumo de produção ativo">
+        </label>
+    </div>
+</section>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Painel — Tereza{% endblock %}
+{% block title %}Painel — Colheita de Dados{% endblock %}
 
 {% block extra_head %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +27,13 @@
   .alert-item__body strong { display:block; overflow:hidden; color:#26453a; font-size:14px; text-overflow:ellipsis; white-space:nowrap; }
   .alert-item__body small { display:block; margin-top:3px; color:#789087; font-size:12px; }
   .alert-item__link { color:#28725a; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; }
+  .sensor-alert-carousel { display:flex; gap:12px; overflow-x:auto; margin-bottom:12px; padding:2px 2px 6px; scroll-snap-type:x proximity; }
+  .sensor-alert-card { display:flex; flex:0 0 138px; aspect-ratio:1; flex-direction:column; align-items:flex-start; justify-content:space-between; padding:12px; border:1px solid #f0d4bb; border-radius:8px; background:#fff5eb; scroll-snap-align:start; }
+  .sensor-alert-card--stock { border-color:#cde5d2; background:#eff9f0; }
+  .sensor-alert-card .alert-item__icon { width:30px; height:30px; }
+  .sensor-alert-card .alert-item__body strong { overflow:visible; white-space:normal; }
+  .sensor-alert-card .alert-item__body small { line-height:1.35; }
+  .sensor-alert-card .alert-item__link { align-self:flex-end; }
   .alert-empty { display:grid; place-items:center; min-height:145px; color:#668277; text-align:center; }
   .alert-empty > div { display:flex; flex-direction:column; align-items:center; }
   .alert-empty svg { display:block; margin:0 auto 10px; color:#4f9b74; }
@@ -103,7 +110,19 @@
       <section class="dashboard__block" aria-labelledby="alerts-title">
       <div class="panel-title">
         <h2 id="alerts-title">Mensagens de alerta</h2>
-        {% if ruptura %}<span>{{ ruptura|length }} pendente{{ ruptura|length|pluralize }}</span>{% else %}<span>Atualizado agora</span>{% endif %}
+        {% if ruptura %}<span>{{ ruptura|length|add:'2' }} pendentes</span>{% else %}<span>2 pendentes</span>{% endif %}
+      </div>
+      <div class="sensor-alert-carousel" aria-label="Alertas de sensores">
+        <article class="sensor-alert-card">
+          <span class="alert-item__icon" aria-hidden="true"><i data-lucide="droplets" width="18"></i></span>
+          <div class="alert-item__body"><strong>Umidade baixa na Estação Sul</strong><small>39% · Pasto 03 · 09:58</small></div>
+          <a class="alert-item__link" href="{% url 'core:sensoriamento' %}">Ver sensor</a>
+        </article>
+        <article class="sensor-alert-card">
+          <span class="alert-item__icon" aria-hidden="true"><i data-lucide="triangle-alert" width="18"></i></span>
+          <div class="alert-item__body"><strong>Fertilizante NPK abaixo do mínimo</strong><small>65 kg em estoque · mínimo 80 kg · déficit 15 kg</small></div>
+          <a class="alert-item__link" href="{% url 'core:insumo_list' %}">Ver estoque</a>
+        </article>
       </div>
       {% if ruptura %}
       <ul class="alert-list">
@@ -115,8 +134,6 @@
         </li>
         {% endfor %}
       </ul>
-      {% else %}
-      <div class="alert-empty"><div><i data-lucide="circle-check-big" width="30"></i><strong>Nenhum alerta pendente</strong><small>O estoque está dentro dos níveis esperados.</small></div></div>
       {% endif %}
       </section>
 

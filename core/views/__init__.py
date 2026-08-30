@@ -6,6 +6,7 @@ seu `template_name` e o contrato do contexto está documentado no docstring
 da classe.
 """
 from core.views.painel import PainelView
+from .conta import ConfiguracoesView, PerfilView
 
 from .filial import (
     FilialCreateView,

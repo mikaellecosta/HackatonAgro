@@ -1,11 +1,11 @@
 """
-Popula o banco com dados de demonstração coerentes para a apresentação:
+Popula o banco com dados de demonstração agrícolas para a apresentação:
 
-- 1 matriz e 2 filiais (Pinheiros/SP e Copacabana/RJ)
+- 1 matriz e 2 unidades produtivas no Ceará
 - superuser `admin` e gerentes de cada filial
-- 4 fornecedores em diferentes ramos e estados
+- 4 fornecedores de insumos agrícolas
 - 8 insumos com estoque mínimo
-- 4 pratos com receita
+- 4 produtos agrícolas com composição
 - vínculos ItemFornecedor com preços
 - vendas e pedidos concluídos para alimentar relatórios
 
@@ -43,46 +43,71 @@ from core.permissions import GRUPO_GERENTE_FILIAL, GRUPO_MATRIZ
 
 
 class Command(BaseCommand):
-    help = 'Popula o banco com dados de demonstração do desafio Tereza.'
+    help = 'Popula o banco com dados de demonstração da operação agrícola.'
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING('Seeding Tereza Gastronomia...'))
+        self.stdout.write(self.style.MIGRATE_HEADING('Seeding Colheita de Dados...'))
+
+        # Remove os registros do cenário antigo antes de recriar o demo agrícola.
+        legacy_filiais = Filial.objects.filter(nome__in=[
+            'Tereza Matriz', 'Tereza Pinheiros', 'Tereza Copacabana',
+        ])
+        Pedido.objects.filter(filial__in=legacy_filiais).delete()
+        Venda.objects.filter(filial__in=legacy_filiais).delete()
+        legacy_filiais.delete()
+
+        Prato.objects.filter(nome__in=[
+            'Pizza Margherita', 'Pão na chapa com queijo', 'Café espresso',
+            'Pingado', 'Lote de milho para plantio',
+            'Mudas de tomate selecionadas', 'Aplicação de bioinsumo',
+        ]).delete()
+        Insumo.objects.filter(nome__in=[
+            'Tomate maduro', 'Queijo mussarela', 'Massa de pizza',
+            'Manjericão fresco', 'Azeite de oliva', 'Pão francês',
+            'Café em grão', 'Leite integral',
+        ]).delete()
+        Fornecedor.objects.filter(nome__in=[
+            'Hortifruti Central SP', 'Laticínios Vale Verde',
+            'Padaria Atlântica', 'Café & Cia', 'Cooperativa Sertão Verde',
+            'AgroCampo Insumos Rurais',
+        ]).delete()
+        User.objects.filter(username__in=['gerente_sp', 'gerente_rj']).delete()
 
         # --- Filiais ---
         matriz, _ = Filial.objects.update_or_create(
-            nome='Tereza Matriz',
+            nome='Colheita de Dados - Matriz',
             defaults=dict(
                 cnpj='11111111000111',
-                email='matriz@tereza.com.br',
-                telefone='11 3000-0000',
-                cidade='São Paulo',
-                estado=Estado.SP,
-                endereco='Av. Paulista, 1000 - Bela Vista, 01310-100',
+                email='matriz@colheitadedados.com.br',
+                telefone='88 3000-0000',
+                cidade='Iguatu',
+                estado=Estado.CE,
+                endereco='Rod. CE-060, km 12 - Zona Rural',
                 is_matriz=True,
             ),
         )
         filial_sp, _ = Filial.objects.update_or_create(
-            nome='Tereza Pinheiros',
+            nome='Unidade Milho Sertão',
             defaults=dict(
                 cnpj='11111111000222',
-                email='pinheiros@tereza.com.br',
-                telefone='11 3030-3030',
-                cidade='São Paulo',
-                estado=Estado.SP,
-                endereco='Rua dos Pinheiros, 500 - Pinheiros, 05422-000',
+                email='milho@colheitadedados.com.br',
+                telefone='88 3030-3030',
+                cidade='Quixelô',
+                estado=Estado.CE,
+                endereco='Sítio Boa Esperança, Zona Rural',
                 is_matriz=False,
             ),
         )
         filial_rj, _ = Filial.objects.update_or_create(
-            nome='Tereza Copacabana',
+            nome='Unidade Horticultura Verde',
             defaults=dict(
                 cnpj='11111111000333',
-                email='copa@tereza.com.br',
-                telefone='21 2222-2222',
-                cidade='Rio de Janeiro',
-                estado=Estado.RJ,
-                endereco='Av. Atlântica, 2000 - Copacabana, 22021-001',
+                email='horticultura@colheitadedados.com.br',
+                telefone='88 2222-2222',
+                cidade='Jucás',
+                estado=Estado.CE,
+                endereco='Fazenda Lagoa Seca, Zona Rural',
                 is_matriz=False,
             ),
         )
@@ -94,8 +119,8 @@ class Command(BaseCommand):
         admin, criado = User.objects.get_or_create(
             username='admin',
             defaults=dict(
-                email='admin@tereza.com.br',
-                first_name='Tereza',
+                email='admin@colheitadedados.com.br',
+                first_name='Colheita',
                 last_name='Admin',
                 is_staff=True,
                 is_superuser=True,
@@ -107,16 +132,16 @@ class Command(BaseCommand):
         admin.groups.add(grupo_matriz)
 
         gerente_sp, criado = User.objects.get_or_create(
-            username='gerente_sp',
+            username='gerente_milho',
             defaults=dict(
-                email='ana.sp@tereza.com.br',
+                email='gerente.milho@colheitadedados.com.br',
                 first_name='Ana',
-                last_name='Souza',
+                last_name='Sertão',
                 is_staff=True,
             ),
         )
         if criado:
-            gerente_sp.set_password('tereza123')
+            gerente_sp.set_password('agro123')
             gerente_sp.save()
         gerente_sp.groups.add(grupo_gerente)
         if filial_sp.gerente_id != gerente_sp.pk:
@@ -124,16 +149,16 @@ class Command(BaseCommand):
             filial_sp.save()
 
         gerente_rj, criado = User.objects.get_or_create(
-            username='gerente_rj',
+            username='gerente_horta',
             defaults=dict(
-                email='bruno.rj@tereza.com.br',
+                email='gerente.horta@colheitadedados.com.br',
                 first_name='Bruno',
-                last_name='Lima',
+                last_name='Verde',
                 is_staff=True,
             ),
         )
         if criado:
-            gerente_rj.set_password('tereza123')
+            gerente_rj.set_password('agro123')
             gerente_rj.save()
         gerente_rj.groups.add(grupo_gerente)
         if filial_rj.gerente_id != gerente_rj.pk:
@@ -142,14 +167,14 @@ class Command(BaseCommand):
 
         # --- Insumos ---
         insumos_specs = [
-            ('Tomate maduro',   UnidadeMedida.QUILOGRAMA, '8'),
-            ('Queijo mussarela',UnidadeMedida.QUILOGRAMA, '5'),
-            ('Massa de pizza',  UnidadeMedida.QUILOGRAMA, '4'),
-            ('Manjericão fresco', UnidadeMedida.GRAMA, '300'),
-            ('Azeite de oliva', UnidadeMedida.LITRO, '3'),
-            ('Pão francês',     UnidadeMedida.UNIDADE, '50'),
-            ('Café em grão',    UnidadeMedida.QUILOGRAMA, '2'),
-            ('Leite integral',  UnidadeMedida.LITRO, '10'),
+            ('Sementes de milho híbrido', UnidadeMedida.QUILOGRAMA, '25'),
+            ('Fertilizante NPK 04-14-08', UnidadeMedida.QUILOGRAMA, '100'),
+            ('Mudas de tomate', UnidadeMedida.UNIDADE, '500'),
+            ('Bioinsumo para controle biológico', UnidadeMedida.LITRO, '20'),
+            ('Calcário agrícola', UnidadeMedida.QUILOGRAMA, '250'),
+            ('Sementes de feijão', UnidadeMedida.QUILOGRAMA, '30'),
+            ('Herbicida seletivo', UnidadeMedida.LITRO, '15'),
+            ('Ração para gado', UnidadeMedida.QUILOGRAMA, '300'),
         ]
         insumos = {}
         for nome, unidade, minimo in insumos_specs:
@@ -165,44 +190,44 @@ class Command(BaseCommand):
         # --- Fornecedores ---
         fornecedores_specs = [
             dict(
-                nome='Hortifruti Central SP',
+                nome='AgroCampo Insumos Rurais',
                 cnpj='22222222000111',
                 ramo_alimenticio=RamoAlimenticio.HORTIFRUTI,
                 representante='Carlos Mendes',
-                email='vendas@hortisp.com.br',
-                telefone='11 4040-4040',
-                cidade='São Paulo', estado=Estado.SP,
-                endereco='Rua das Frutas, 100',
+                email='vendas@agrocampo.com.br',
+                telefone='85 4040-4040',
+                cidade='Fortaleza', estado=Estado.CE,
+                endereco='Av. das Sementes, 450 - Messejana',
             ),
             dict(
-                nome='Laticínios Vale Verde',
+                nome='Cooperativa Sertão Verde',
                 cnpj='33333333000111',
-                ramo_alimenticio=RamoAlimenticio.LATICINIOS,
+                ramo_alimenticio=RamoAlimenticio.HORTIFRUTI,
                 representante='Helena Castro',
-                email='comercial@valeverde.com.br',
-                telefone='11 5050-5050',
-                cidade='Campinas', estado=Estado.SP,
-                endereco='Rod. das Vacas, km 12',
+                email='comercial@sertaoverde.coop.br',
+                telefone='88 5050-5050',
+                cidade='Iguatu', estado=Estado.CE,
+                endereco='Rod. CE-060, km 12 - Zona Rural',
             ),
             dict(
-                nome='Padaria Atlântica',
+                nome='Nutrivale Fertilizantes',
                 cnpj='44444444000111',
-                ramo_alimenticio=RamoAlimenticio.PADARIA,
+                ramo_alimenticio=RamoAlimenticio.OUTROS,
                 representante='João Almeida',
-                email='joao@atlantica.com.br',
-                telefone='21 6060-6060',
-                cidade='Rio de Janeiro', estado=Estado.RJ,
-                endereco='Av. Atlântica, 3000',
+                email='joao@nutrivale.com.br',
+                telefone='85 6060-6060',
+                cidade='Sobral', estado=Estado.CE,
+                endereco='Rod. BR-222, km 18 - Distrito Industrial',
             ),
             dict(
-                nome='Café & Cia',
+                nome='Sertão Sementes',
                 cnpj='55555555000111',
                 ramo_alimenticio=RamoAlimenticio.MERCEARIA,
                 representante='Luiza Pereira',
-                email='luiza@cafeecia.com.br',
-                telefone='31 7070-7070',
-                cidade='Belo Horizonte', estado=Estado.MG,
-                endereco='Av. dos Cafezais, 200',
+                email='luiza@sertaosementes.com.br',
+                telefone='88 7070-7070',
+                cidade='Crato', estado=Estado.CE,
+                endereco='Av. do Agricultor, 200 - Centro',
             ),
         ]
         fornecedores = {}
@@ -214,18 +239,14 @@ class Command(BaseCommand):
 
         # --- ItemFornecedor (preços) ---
         precos_specs = [
-            # Hortifruti SP
-            ('Hortifruti Central SP', 'Tomate maduro',   '6.50',  2),
-            ('Hortifruti Central SP', 'Manjericão fresco', '0.05', 1),
-            # Laticínios
-            ('Laticínios Vale Verde', 'Queijo mussarela', '38.00', 3),
-            ('Laticínios Vale Verde', 'Leite integral',   '4.20',  2),
-            # Padaria RJ
-            ('Padaria Atlântica',     'Pão francês',      '0.75',  1),
-            ('Padaria Atlântica',     'Massa de pizza',   '12.00', 2),
-            # Mercearia MG
-            ('Café & Cia',            'Café em grão',     '52.00', 5),
-            ('Café & Cia',            'Azeite de oliva',  '32.00', 3),
+            ('AgroCampo Insumos Rurais', 'Herbicida seletivo', '48.00', 5),
+            ('AgroCampo Insumos Rurais', 'Ração para gado', '2.90', 3),
+            ('Cooperativa Sertão Verde', 'Mudas de tomate', '1.80', 7),
+            ('Cooperativa Sertão Verde', 'Bioinsumo para controle biológico', '28.00', 5),
+            ('Nutrivale Fertilizantes', 'Fertilizante NPK 04-14-08', '3.20', 12),
+            ('Nutrivale Fertilizantes', 'Calcário agrícola', '0.65', 10),
+            ('Sertão Sementes', 'Sementes de milho híbrido', '14.50', 10),
+            ('Sertão Sementes', 'Sementes de feijão', '11.80', 8),
         ]
         for forn_nome, ins_nome, preco, prazo in precos_specs:
             ItemFornecedor.objects.update_or_create(
@@ -234,25 +255,19 @@ class Command(BaseCommand):
                 defaults=dict(preco=Decimal(preco), prazo_entrega_dias=prazo),
             )
 
-        # --- Pratos com receita ---
+        # --- Produtos agrícolas com composição ---
         pratos_specs = [
-            ('Pizza Margherita', '49.90', [
-                ('Tomate maduro', '0.20'),
-                ('Queijo mussarela', '0.15'),
-                ('Massa de pizza', '0.30'),
-                ('Manjericão fresco', '5'),
-                ('Azeite de oliva', '0.02'),
+            ('Saca de milho beneficiado', '145.00', [
+                ('Sementes de milho híbrido', '1'),
             ]),
-            ('Pão na chapa com queijo', '12.50', [
-                ('Pão francês', '1'),
-                ('Queijo mussarela', '0.04'),
+            ('Lote de mudas de tomate', '90.00', [
+                ('Mudas de tomate', '10'),
             ]),
-            ('Café espresso', '8.00', [
-                ('Café em grão', '0.012'),
+            ('Aplicação de bioinsumo', '320.00', [
+                ('Bioinsumo para controle biológico', '5'),
             ]),
-            ('Pingado', '7.00', [
-                ('Café em grão', '0.008'),
-                ('Leite integral', '0.10'),
+            ('Análise de solo e recomendação', '180.00', [
+                ('Calcário agrícola', '20'),
             ]),
         ]
         pratos = {}
@@ -277,17 +292,18 @@ class Command(BaseCommand):
         agora = timezone.now()
         for filial, gerente, qtds in [
             (filial_sp, gerente_sp, {
-                'Tomate maduro': '20',
-                'Queijo mussarela': '10',
-                'Massa de pizza': '15',
-                'Manjericão fresco': '500',
-                'Azeite de oliva': '5',
+                'Sementes de milho híbrido': '120',
+                'Fertilizante NPK 04-14-08': '500',
+                'Calcário agrícola': '800',
             }),
             (filial_rj, gerente_rj, {
-                'Pão francês': '200',
-                'Queijo mussarela': '6',
-                'Café em grão': '4',
-                'Leite integral': '20',
+                'Mudas de tomate': '1500',
+                'Bioinsumo para controle biológico': '60',
+                'Herbicida seletivo': '40',
+            }),
+            (matriz, admin, {
+                'Sementes de feijão': '100',
+                'Ração para gado': '1000',
             }),
         ]:
             # Cada pedido vai ao fornecedor mais barato do insumo
@@ -316,10 +332,13 @@ class Command(BaseCommand):
 
         # --- Vendas concluídas (saída + signal recalcula insumos) ---
         for dia, filial, gerente, prato_qtds in [
-            (1, filial_sp, gerente_sp, [('Pizza Margherita', 12)]),
-            (2, filial_sp, gerente_sp, [('Pizza Margherita', 8), ('Pão na chapa com queijo', 5)]),
-            (1, filial_rj, gerente_rj, [('Café espresso', 30), ('Pingado', 20)]),
-            (3, filial_rj, gerente_rj, [('Pão na chapa com queijo', 10), ('Café espresso', 15)]),
+            (1, filial_sp, gerente_sp, [('Saca de milho beneficiado', 12)]),
+            (2, filial_sp, gerente_sp, [('Aplicação de bioinsumo', 3)]),
+            (1, filial_rj, gerente_rj, [('Lote de mudas de tomate', 20)]),
+            (3, filial_rj, gerente_rj, [('Análise de solo e recomendação', 8)]),
+            (4, matriz, admin, [('Saca de milho beneficiado', 25)]),
+            (5, matriz, admin, [('Lote de mudas de tomate', 30)]),
+            (6, matriz, admin, [('Aplicação de bioinsumo', 5)]),
         ]:
             preco_total = sum(
                 pratos[nome].preco * qtd for nome, qtd in prato_qtds
@@ -348,5 +367,5 @@ class Command(BaseCommand):
         self.stdout.write('')
         self.stdout.write('Usuários criados:')
         self.stdout.write('  admin / admin123 — superuser (Matriz)')
-        self.stdout.write('  gerente_sp / tereza123 — Gerente Pinheiros')
-        self.stdout.write('  gerente_rj / tereza123 — Gerente Copacabana')
+        self.stdout.write('  gerente_milho / agro123 — Unidade Milho Sertão')
+        self.stdout.write('  gerente_horta / agro123 — Unidade Horticultura Verde')

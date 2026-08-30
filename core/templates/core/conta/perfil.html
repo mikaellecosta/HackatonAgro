@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+<section class="ts-card max-w-2xl">
+    <p class="text-sm text-cowhide-cocoa/60">Minha conta</p>
+    <h1 class="mt-1">Perfil</h1>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div>
+            <span class="text-sm text-cowhide-cocoa/60">Nome</span>
+            <p class="font-semibold">{{ user.get_full_name|default:user.username }}</p>
+        </div>
+        <div>
+            <span class="text-sm text-cowhide-cocoa/60">Usuário</span>
+            <p class="font-semibold">{{ user.username }}</p>
+        </div>
+        <div>
+            <span class="text-sm text-cowhide-cocoa/60">E-mail</span>
+            <p class="font-semibold">{{ user.email|default:'Não informado' }}</p>
+        </div>
+        <div>
+            <span class="text-sm text-cowhide-cocoa/60">Telefone</span>
+            <p class="font-semibold">{{ user.telefone|default:'Não informado' }}</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

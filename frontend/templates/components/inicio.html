@@ -1,14 +1,103 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Integro Agro conecta dados, pessoas e decisões para uma produção mais inteligente." />
+    <title>integro agro | Plantando dados, colhendo futuro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+    <style>
+      {% include "components/styles.css" %}
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="Integro Agro, início">
+        <img src="{% static 'img/logo.png' %}" alt="Integro Agro" />
+      </a>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a class="active" href="#inicio">Início</a>
+        <a href="#servicos">Soluções</a>
+        <a href="#sobre">Quem somos</a>
+      </nav>
+      <a class="header-cta" href="{% url 'core:login' %}">Login <span aria-hidden="true">↗</span></a>
+      <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+    </header>
 
-  <title>Colheita de Dados</title>
-  <body> LANDING PAGE </body>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'core:login' %}">Login</a>
-  </li>
+    <main>
+      <section class="hero" id="inicio">
+        <img class="hero-image" src="{% static 'img/capa2.png' %}" alt="Profissional analisando uma lavoura ao pôr do sol" />
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow light">Tecnologia que nasce no campo</p>
+          <h1>Decisões mais<br /><em>inteligentes.</em></h1>
+          <p class="hero-copy">Plantantando dados, colhendo lucros</p>
+          <a class="button button-light" href="#servicos">Conheça nossas soluções <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-note"><span class="scroll-line"></span><span>Produção conectada<br />do plantio à colheita</span></div>
+      </section>
 
+      <section class="intro" id="sobre">
+        <div class="section-kicker"><span>01</span><span class="rule"></span><span>O nosso jeito</span></div>
+        <div class="intro-grid">
+          <h2>O campo fala.<br /><span>A gente traduz.</span></h2>
+          <div class="intro-text">
+            <p>Na Integrago, transformamos informação em ação. Nossas ferramentas aproximam equipes, organizam a operação e revelam oportunidades onde elas sempre estiveram: no detalhe.</p>
+            <a class="text-link" href="#contato">Descubra a Integrago <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+
+      <section class="services" id="servicos">
+        <div class="services-head">
+          <div class="section-kicker"><span>02</span><span class="rule"></span><span>O que fazemos</span></div>
+          <h2>Mais clareza.<br /><em>Mais colheita.</em></h2>
+        </div>
+        <div class="service-list">
+          <article class="service-card featured"><span class="service-number">01</span><h3>Controle de Gestão de Recursos na Produção Agrícola</h3><p>Organize insumos, equipes e custos para uma produção mais eficiente.</p><span class="card-arrow">↗</span></article>
+          <article class="service-card"><span class="service-number">02</span><h3>Monitoramento de Deficiências Nutricionais na Lavoura</h3><p>Identifique desequilíbrios nutricionais e aja no momento certo.</p><span class="card-arrow">↗</span></article>
+          <article class="service-card"><span class="service-number">03</span><h3>Detecção de Doenças em Lavouras</h3><p>Mapeie sinais de doenças com precisão para proteger sua plantação.</p><span class="card-arrow">↗</span></article>
+          <article class="service-card featured"><span class="service-number">04</span><h3>Monitoramento de Áreas de Plantio e da Variabilidade Climática</h3><p>Acompanhe cada área e antecipe mudanças no clima e no campo.</p><span class="card-arrow">↗</span></article>
+        </div>
+      </section>
+
+      <section class="quote-section">
+        <div class="quote-mark">“</div>
+        <blockquote>Quando o dado chega na hora certa, a decisão muda tudo.</blockquote>
+        <div class="quote-author"><span></span><p>João Silva<br /><small>Produtor rural, Iguatu, Ceará</small></p></div>
+      </section>
+
+      <section class="contact" id="contato">
+        <div class="contact-copy"><div class="section-kicker"><span>03</span><span class="rule"></span><span>Vamos conversar</span></div><h2>Seu próximo<br /><em>passo começa aqui.</em></h2><p>Conte um pouco sobre o seu desafio. A nossa equipe responde em até um dia útil.</p></div>
+        <form class="contact-form" id="contact-form"><label>Nome<input type="text" name="name" placeholder="Como podemos te chamar?" required /></label><label>E-mail<input type="email" name="email" placeholder="voce@empresa.com" required /></label><label class="full">Mensagem<textarea name="message" rows="4" placeholder="Fale sobre a sua operação"></textarea></label><button class="button button-dark" type="submit">Enviar mensagem <span aria-hidden="true">↗</span></button><p class="form-status" role="status"></p></form>
+      </section>
+    </main>
+
+    <footer class="site-footer"><p>Plantando dados, colhendo lucros.</p><p class="footer-copy">© 2026 Integrago</p></footer>
+    <script>
+      const menuToggle = document.querySelector('.menu-toggle');
+      const mainNav = document.querySelector('.main-nav');
+
+      menuToggle.addEventListener('click', () => {
+        const isOpen = mainNav.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      document.querySelectorAll('.main-nav a').forEach((link) => {
+        link.addEventListener('click', () => {
+          mainNav.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      document.querySelector('#contact-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const status = document.querySelector('.form-status');
+        status.textContent = 'Mensagem recebida. Em breve a gente conversa.';
+        event.target.reset();
+      });
+    </script>
+  </body>
 </html>
